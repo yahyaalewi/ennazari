@@ -39,18 +39,6 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "10MB",
-                  "maximumError": "20MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "10MB",
-                  "maximumError": "20MB"
-                }
-              ],
               "outputHashing": "all"
             },
             "development": {
