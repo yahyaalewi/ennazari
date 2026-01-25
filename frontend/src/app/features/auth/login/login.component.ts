@@ -78,6 +78,10 @@ import { I18nService } from '../../../core/services/i18n.service';
       border: 1px solid rgba(255, 255, 255, 0.4);
       width: 100%;
       max-width: 420px;
+      min-height: 620px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       z-index: 10;
       animation: floatUp 0.6s ease-out;
     }
