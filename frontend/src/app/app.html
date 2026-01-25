@@ -1,0 +1,4 @@
+<router-outlet />
+<app-toast-container />
+<app-confirm-modal [isOpen]="confirmationService.isOpen()" [title]="confirmationService.options().title"
+    [message]="confirmationService.options().message" (confirm)="confirmationService.resolve($event)" />

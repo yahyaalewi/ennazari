@@ -1,0 +1,27 @@
+# Fichiers sensibles et secrets
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Dépendances Node.js (très lourd, à ne pas pusher)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Angular - dossiers générés
+.angular/
+dist/
+tmp/
+out-tsc/
+bazel-out/
+
+# IDE et Système
+.idea/
+.vscode/
+*.swp
+*.DS_Store
+Thumbs.db
+
+# Autres logs
+*.log
