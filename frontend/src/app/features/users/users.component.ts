@@ -59,9 +59,11 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
               <input type="email" [(ngModel)]="formData.email" name="email" required>
             </div>
 
-            <div class="form-group" *ngIf="!editingUser">
-              <label>{{ 'USERS.PASSWORD' | translate }} *</label>
-              <input type="password" [(ngModel)]="formData.password" name="password" required>
+            <div class="form-group">
+              <label>{{ 'USERS.PASSWORD' | translate }} <span *ngIf="!editingUser">*</span></label>
+              <input type="password" [(ngModel)]="formData.password" name="password" [required]="!editingUser"
+                     [placeholder]="editingUser ? ('USERS.LEAVE_BLANK_PASSWORD' | translate) : ''">
+              <small *ngIf="editingUser" class="hint-text">{{ 'USERS.PASSWORD_HINT' | translate }}</small>
             </div>
 
             <div class="form-group">
@@ -626,6 +628,13 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
       color: var(--text-muted);
     }
 
+    .hint-text {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
     .locked-badge {
       font-size: 1.2rem;
       margin-right: 0.5rem;
@@ -852,7 +861,8 @@ export class UsersComponent implements OnInit {
       role: this.formData.role
     };
 
-    if (!this.editingUser) {
+    // Include password if creating new user OR if editing and password field is not empty
+    if (!this.editingUser || (this.editingUser && this.formData.password)) {
       payload.password = this.formData.password;
     }
 
