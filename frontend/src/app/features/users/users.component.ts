@@ -123,6 +123,8 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
                 <h3>{{ user.firstName }} {{ user.lastName }}</h3>
                 <p class="email">{{ user.email }}</p>
               </div>
+              <!-- Locked Badge -->
+              <span *ngIf="user.isLocked" class="locked-badge" title="{{ 'USERS.LOCKED' | translate }}">🔒</span>
               <span class="role-badge role-professor">{{ 'USERS.PROFESSOR' | translate }}</span>
             </div>
             <div class="user-details">
@@ -131,6 +133,9 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
               </span>
             </div>
             <div class="user-actions">
+              <button *ngIf="user.isLocked" class="btn-unlock" (click)="unlockUser(user)" title="{{ 'USERS.UNLOCK' | translate }}">
+                🔓 {{ 'USERS.UNLOCK' | translate }}
+              </button>
               <button class="btn-edit" (click)="editUser(user)">✏️ {{ 'COMMON.EDIT' | translate }}</button>
               <button class="btn-delete" (click)="deleteUser(user._id)">🗑️ {{ 'COMMON.DELETE' | translate }}</button>
             </div>
