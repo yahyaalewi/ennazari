@@ -100,15 +100,16 @@ const deleteNotification = async (req, res) => {
 };
 
 // Helper function to create notifications (used by other controllers)
-const createNotification = async (userId, type, title, message, relatedId = null, relatedModel = null) => {
+const createNotification = async (userId, type, title, message, relatedId = null, relatedModel = null, params = {}) => {
     try {
         await Notification.create({
             user: userId,
             type,
-            title,
-            message,
+            title, // Can be translation key
+            message, // Can be translation key
             relatedId,
-            relatedModel
+            relatedModel,
+            params
         });
     } catch (error) {
         console.error('Error creating notification:', error);
@@ -116,16 +117,17 @@ const createNotification = async (userId, type, title, message, relatedId = null
 };
 
 // Helper to create notifications for multiple users
-const createNotificationsForUsers = async (userIds, type, title, message, relatedId = null, relatedModel = null) => {
+const createNotificationsForUsers = async (userIds, type, title, message, relatedId = null, relatedModel = null, params = {}) => {
     try {
-        console.log('createNotificationsForUsers called with:', { userIds, type, title, message });
+        console.log('createNotificationsForUsers called with:', { userIds, type, title, message, params });
         const notifications = userIds.map(userId => ({
             user: userId,
             type,
             title,
             message,
             relatedId,
-            relatedModel
+            relatedModel,
+            params
         }));
 
         await Notification.insertMany(notifications);

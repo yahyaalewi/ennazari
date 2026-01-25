@@ -202,28 +202,41 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
 
     .search-bar {
       position: relative;
-      background: white;
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
       display: flex;
       align-items: center;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 50px; /* Pillow shape */
+      padding: 0.5rem 1rem;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-bar:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+      transform: translateY(-1px);
     }
 
     .search-icon {
-      padding-left: 0.75rem;
-      opacity: 0.5;
+      margin-right: 0.75rem;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      opacity: 1; /* Reset opacity */
+      padding: 0; /* Reset padding */
     }
 
     /* RTL */
     [dir="rtl"] .search-icon {
-      padding-left: 0;
-      padding-right: 0.75rem;
+      margin-right: 0;
+      margin-left: 0.75rem;
+      padding: 0;
     }
 
     .search-input {
       border: none;
       background: transparent;
-      padding: 0.75rem;
+      padding: 0;
       width: 200px;
       outline: none;
       font-size: 0.95rem;
@@ -241,7 +254,13 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
         flex-direction: column;
         align-items: stretch;
       }
-      .search-bar, .search-input {
+      .search-bar {
+        width: 100%;
+      }
+      .search-input {
+        width: 100%;
+      }
+      .search-input:focus {
         width: 100%;
       }
       .btn-add {

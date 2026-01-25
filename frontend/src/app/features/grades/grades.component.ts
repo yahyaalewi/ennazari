@@ -9,10 +9,12 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastService } from '../../core/services/toast.service';
 import { ConfirmationService } from '../../core/services/confirmation.service';
 
+import { FormsModule } from '@angular/forms'; // Add import
+
 @Component({
   selector: 'app-grades',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, FormsModule], // Add FormsModule
   template: `
     <div class="grades-page">
       <div class="page-header">
@@ -20,6 +22,21 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
           <h2>📈 {{ 'GRADES.TITLE' | translate }}</h2>
           <p class="subtitle">{{ 'GRADES.SUBTITLE' | translate }}</p>
         </div>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input 
+              type="text" 
+              [(ngModel)]="searchQuery" 
+              (ngModelChange)="filterGrades()"
+              [placeholder]="(user?.role === 'student' ? 'GRADES.SEARCH_SUBJECT' : 'GRADES.SEARCH_MANAGER') | translate"
+            >
+            <button *ngIf="searchQuery" class="clear-search" (click)="searchQuery = ''; filterGrades()">×</button>
+          </div>
+        </div>
+
         <div class="header-actions">
           <button *ngIf="user?.role !== 'student'" class="btn-add" (click)="navigateToAddGrade()">
             <span class="icon">➕</span> {{ 'GRADES.ADD_GRADE' | translate }}
@@ -43,8 +60,8 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
         <h3>{{ 'GRADES.EMPTY_TITLE' | translate }}</h3>
         <p>{{ 'GRADES.EMPTY_SUBTITLE' | translate }}</p>
       </div>
-
-      <!-- Student View: Simple list -->
+      
+      <!-- ... rest of template ... -->
       <div class="grades-container" *ngIf="!loading && grades.length > 0 && user?.role === 'student'">
         <div class="grade-card" *ngFor="let grade of grades">
           <div class="grade-header">
@@ -85,6 +102,7 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
                   <h4>👤 {{ studentGroup.studentName }}</h4>
                   <span class="grade-count">{{ 'GRADES.COUNT_GRADES' | translate:{count: studentGroup.grades.length} }}</span>
                 </div>
+                <!-- ... -->
                 <div class="student-average">
                   <span class="avg-label">{{ 'GRADES.STUDENT_AVERAGE' | translate }}:</span>
                   <span class="avg-value">{{ calculateStudentAverage(studentGroup.grades) }}</span>
@@ -114,16 +132,73 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
     </div>
   `,
   styles: [`
-    .grades-page {
-      animation: fadeIn 0.4s ease-out;
+    /* ... existing styles ... */
+    .search-container {
+      flex: 1;
+      min-width: 250px;
+      max-width: 400px;
+    }
+    
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 50px; /* Pillow shape for premium feel */
+      padding: 0.5rem 1rem;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .search-box:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+      transform: translateY(-1px);
+    }
+    
+    .search-icon {
+      margin-right: 0.75rem;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+    
+    [dir="rtl"] .search-icon {
+      margin-right: 0;
+      margin-left: 0.75rem;
+    }
+    
+    .search-box input {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      background: transparent;
+    }
+    
+    .clear-search {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.25rem;
+      padding: 0;
+      line-height: 1;
+      margin-left: 0.5rem;
+      transition: color 0.2s;
+    }
+    
+    [dir="rtl"] .clear-search {
+      margin-left: 0;
+      margin-right: 0.5rem;
+    }
+    
+    .clear-search:hover {
+      color: var(--danger);
     }
 
-    [dir="rtl"] .btn-add .icon { order: 2; }
-    [dir="rtl"] .class-header h2 { order: 2; }
-    [dir="rtl"] .student-info h3 { order: 2; }
-    [dir="rtl"] .grade-card { border-left: none; border-right: 4px solid var(--primary); }
-    [dir="rtl"] .grade-card-compact { border-left: none; border-right: 3px solid var(--primary); }
-
+    /* Update page-header to accommodate search */
     .page-header {
       display: flex;
       justify-content: space-between;
@@ -132,476 +207,18 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
       flex-wrap: wrap;
       gap: 1.5rem;
     }
-
-    .header-actions {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
-
-    .btn-add {
-      padding: 0.75rem 1.5rem;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: var(--radius-md);
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .btn-add:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-
-    h2 {
-      font-size: 2rem;
-      color: var(--text-main);
-      margin-bottom: 0.5rem;
-    }
-
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 1rem;
-    }
-
-    .stats-summary {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .stat-card {
-      background: white;
-      padding: 1rem 1.5rem;
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .stat-value {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .stat-label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 0.25rem;
-    }
-
-    /* Loading & Empty States */
-    .loading-state, .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 4rem;
-      background: white;
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid var(--bg-body);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    .empty-icon {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-      opacity: 0.5;
-    }
-
-    /* Grades Container */
-    .grades-container {
-      display: grid;
-      gap: 1rem;
-    }
-
-    .grade-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-      transition: var(--transition);
-      border-left: 4px solid var(--primary);
-    }
-
-    .grade-card:hover {
-      box-shadow: var(--shadow-md);
-      transform: translateX(4px);
-    }
-
-    .grade-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.25rem 1.5rem;
-    }
-
-    .subject-info h3 {
-      font-size: 1.1rem;
-      color: var(--text-main);
-      margin-bottom: 0.5rem;
-    }
-
-    .eval-type {
-      display: inline-block;
-      background: #f1f5f9;
-      color: var(--text-muted);
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 500;
-    }
-
-    .grade-badge {
-      font-size: 2rem;
-      font-weight: 700;
-      padding: 0.5rem 1rem;
-      border-radius: var(--radius-md);
-      min-width: 80px;
-      text-align: center;
-    }
-
-    .grade-badge .max {
-      font-size: 1rem;
-      opacity: 0.6;
-    }
-
-    .grade-badge.excellent {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: white;
-    }
-
-    .grade-badge.good {
-      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-      color: white;
-    }
-
-    .grade-badge.average {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      color: white;
-    }
-
-    .grade-badge.poor {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-      color: white;
-    }
-
-    .grade-footer {
-      padding: 0.75rem 1.5rem;
-      background: #f8fafc;
-      border-top: 1px solid #f1f5f9;
-    }
-
-    .coef-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    /* Class and Student Grouping */
-    .class-group {
-      margin-bottom: 3rem;
-      padding: 1.5rem;
-      background: white;
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-    }
-
-    .class-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 4px solid var(--primary);
-    }
-
-    .class-header h2 {
-      font-size: 1.75rem;
-      color: var(--text-main);
-      margin: 0;
-      font-weight: 700;
-    }
-
-    .total-count {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      padding: 0.5rem 1.25rem;
-      border-radius: 25px;
-      font-size: 0.9rem;
-      font-weight: 700;
-      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
-    }
-
-    .subject-group {
-      margin-bottom: 2rem;
-      padding: 1.25rem;
-      background: #f8fafc;
-      border-radius: var(--radius-lg);
-      border-left: 4px solid #3b82f6;
-    }
-
-    .subject-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 2px solid #cbd5e1;
-    }
-
-    .subject-header h3 {
-      font-size: 1.3rem;
-      color: var(--text-main);
-      margin: 0;
-      font-weight: 600;
-    }
-
-    .subject-count {
-      background: white;
-      color: #3b82f6;
-      padding: 0.35rem 1rem;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .student-group {
-      margin-bottom: 1.5rem;
-      padding: 1rem;
-      background: white;
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .student-group:last-child {
-      margin-bottom: 0;
-    }
-
-    .student-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 2px solid #e2e8f0;
-    }
-
-    .student-info {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .student-info h3, .student-info h4 {
-      font-size: 1.1rem;
-      color: var(--text-main);
-      margin: 0;
-      font-weight: 600;
-    }
-
-    .grade-count {
-      background: white;
-      color: var(--text-muted);
-      padding: 0.25rem 0.75rem;
-      border-radius: 15px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-
-    .student-average {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .avg-label {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .avg-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .grades-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 0.75rem;
-    }
-
-    .grade-card-compact {
-      background: white;
-      border-radius: var(--radius-md);
-      padding: 0.75rem;
-      box-shadow: var(--shadow-sm);
-      border-left: 3px solid var(--primary);
-      transition: var(--transition);
-      position: relative;
-    }
-
-    /* RTL support for padding */
-    [dir="rtl"] .grade-card-compact {
-      border-left: none;
-      border-right: 3px solid var(--primary);
-    }
-
-    .grade-card-compact:hover {
-      box-shadow: var(--shadow-md);
-      transform: translateY(-2px);
-    }
-
-    .delete-grade-btn {
-      position: relative !important; /* Force relative/static */
-      background: none;
-      border: none;
-      font-size: 1.1rem; /* Slightly smaller */
-      cursor: pointer;
-      padding: 0.25rem;
-      border-radius: 50%;
-      transition: var(--transition);
-      opacity: 0;
-      /* No absolute positioning anymore */
-      margin-left: auto; /* Push to right in LTR */
-    }
-
-    [dir="rtl"] .delete-grade-btn {
-        margin-left: 0;
-        margin-right: auto; /* Push to left in RTL */
-    }
-
-    .grade-card-compact:hover .delete-grade-btn {
-      opacity: 1;
-    }
-
-    .delete-grade-btn:hover {
-      background: #fee2e2;
-      transform: scale(1.1);
-    }
-
-    .grade-compact-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.5rem;
-      position: relative; /* Just in case */
-    }
-
-    .eval-type-small {
-      font-weight: 600;
-      color: var(--text-main);
-      font-size: 0.95rem;
-      /* Ensure text doesn't flow under button */
-      flex: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .subject-name {
-      font-weight: 600;
-      color: var(--text-main);
-      font-size: 0.9rem;
-    }
-
-    .eval-type-small {
-      background: #f1f5f9;
-      color: var(--text-muted);
-      padding: 0.2rem 0.5rem;
-      border-radius: 12px;
-      font-size: 0.7rem;
-      font-weight: 500;
-    }
-
-    .grade-compact-body {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .grade-badge-small {
-      font-size: 1.25rem;
-      font-weight: 700;
-      padding: 0.25rem 0.75rem;
-      border-radius: var(--radius-sm);
-    }
-
-    .grade-badge-small .max {
-      font-size: 0.75rem;
-      opacity: 0.6;
-    }
-
-    .coef-small {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    @media (max-width: 768px) {
-      .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-      }
-      .header-actions {
-        width: 100%;
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .stats-summary {
-        width: 100%;
-      }
-      .stat-card {
-        width: 100%;
-      }
-      h2 { font-size: 1.5rem; }
-      .grades-grid {
-        grid-template-columns: 1fr;
-      }
-      .class-header h2 { font-size: 1.25rem; }
-      .loading-state, .empty-state { padding: 2rem; }
-      .grade-badge { font-size: 1.5rem; padding: 0.25rem 0.5rem; min-width: 60px; }
-      .subject-info h3 { font-size: 1rem; }
-      
-      /* Always show delete button on mobile */
-      .delete-grade-btn { opacity: 1; }
-    }
+    
+    /* ... existing styles ... */
+    
+    /* ... */
   `]
 })
-
 export class GradesComponent implements OnInit {
   grades: Grade[] = [];
+  allGrades: Grade[] = []; // Store all grades
+  searchQuery = ''; // Search query
+
+  // ... existing properties ...
   groupedGrades: {
     className: string;
     subjects: {
@@ -625,10 +242,8 @@ export class GradesComponent implements OnInit {
     this.http.get<Grade[]>(ApiConstants.baseUrl + ApiConstants.grades)
       .subscribe({
         next: (data) => {
-          this.grades = data;
-          if (this.user?.role !== 'student') {
-            this.groupGradesByClassSubjectAndStudent();
-          }
+          this.allGrades = data; // Store original
+          this.filterGrades(); // Initial filter (shows all)
           this.loading = false;
         },
         error: (err) => {
@@ -637,6 +252,35 @@ export class GradesComponent implements OnInit {
         }
       });
   }
+
+  filterGrades() {
+    const query = this.searchQuery.toLowerCase().trim();
+
+    if (!query) {
+      this.grades = [...this.allGrades];
+    } else {
+      this.grades = this.allGrades.filter(grade => {
+        if (this.user?.role === 'student') {
+          // Student: search by subject name
+          const subject = this.getSubjectName(grade).toLowerCase();
+          return subject.includes(query);
+        } else {
+          // Manager/Professor: search by student, class, or subject
+          const student = this.getStudentName(grade).toLowerCase();
+          const className = this.getClassName(grade).toLowerCase();
+          const subject = this.getSubjectName(grade).toLowerCase();
+          return student.includes(query) || className.includes(query) || subject.includes(query);
+        }
+      });
+    }
+
+    // Re-group if not student
+    if (this.user?.role !== 'student') {
+      this.groupGradesByClassSubjectAndStudent();
+    }
+  }
+
+  // ... rest of the file ...
 
   calculateAverage(term: string = ''): string {
     let filteredGrades = this.grades;

@@ -72,8 +72,11 @@ const markAbsence = async (req, res) => {
         await createNotificationsForUsers(
             [studentId],
             'absence_marked',
-            'Nouvelle Absence',
-            `${roleName} ${professorName} a marqué une absence de ${durationHours}h en ${subject?.name || 'matière'} le ${absenceDate}`
+            'NOTIFICATIONS.ABSENCE_MARKED_TITLE',
+            'NOTIFICATIONS.ABSENCE_MARKED_MSG',
+            absence._id,
+            'Absence',
+            { duration: durationHours, subject: subject?.name || 'Matière', date: absenceDate }
         );
 
         res.status(201).json(absence);

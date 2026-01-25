@@ -1,3 +1,9 @@
+@if (showSplash()) {
+<div class="splash-screen">
+    <img src="logo.jpg" alt="Logo" class="splash-logo">
+</div>
+}
+
 <router-outlet />
 <app-toast-container />
 <app-confirm-modal [isOpen]="confirmationService.isOpen()" [title]="confirmationService.options().title"

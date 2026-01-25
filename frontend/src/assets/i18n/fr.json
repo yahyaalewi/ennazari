@@ -126,7 +126,9 @@
         },
         "SAVING": "Enregistrement...",
         "DELETE_CONFIRM": "Êtes-vous sûr de vouloir supprimer cette note ?",
-        "DELETE_ERROR": "Erreur lors de la suppression de la note"
+        "DELETE_ERROR": "Erreur lors de la suppression de la note",
+        "SEARCH_SUBJECT": "Rechercher par matière...",
+        "SEARCH_MANAGER": "Rechercher par étudiant, classe ou matière..."
     },
     "ABSENCES": {
         "TITLE": "Absences",

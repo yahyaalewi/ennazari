@@ -84,10 +84,11 @@ const uploadCourse = async (req, res) => {
             await createNotificationsForUsers(
                 studentIds,
                 'course_added',
-                `Nouveau cours : ${title}`,
-                `Un nouveau cours de ${subjectName} a été ajouté pour ${className}`,
+                'NOTIFICATIONS.COURSE_ADDED_TITLE',
+                'NOTIFICATIONS.COURSE_ADDED_MSG',
                 course._id,
-                'Course'
+                'Course',
+                { title, subject: subjectName }
             );
         }
 

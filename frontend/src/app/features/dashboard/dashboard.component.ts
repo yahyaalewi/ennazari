@@ -1014,8 +1014,18 @@ export class DashboardComponent implements OnInit {
     this.authService.logout();
   }
 
-  getNotificationData(notification: Notification): { titleKey: string, titleParams: any, msgKey: string, msgParams: any } {
-    // Default fallback (use raw backend strings if no match)
+  getNotificationData(notification: any): { titleKey: string, titleParams: any, msgKey: string, msgParams: any } {
+    // New Logic: Use params from backend if available
+    if (notification.params && Object.keys(notification.params).length > 0) {
+      return {
+        titleKey: notification.title,
+        titleParams: notification.params,
+        msgKey: notification.message,
+        msgParams: notification.params
+      };
+    }
+
+    // Fallback logic for old notifications (Regex parsing)
     const result = {
       titleKey: notification.title,
       titleParams: {},
@@ -1024,7 +1034,7 @@ export class DashboardComponent implements OnInit {
     };
 
     if (notification.type === 'grade_added') {
-      result.titleKey = 'NOTIFICATIONS.GRADE_ADDED_TITLE';
+      if (!notification.title.includes('NOTIFICATIONS.')) result.titleKey = 'NOTIFICATIONS.GRADE_ADDED_TITLE';
       // Match: "Professor Name a ajouté une note de 15/20 en Math (Devoir)"
       const match = notification.message.match(/note de ([\d\.]+)\/20 en (.*?) \((.*)\)/);
       if (match) {
@@ -1032,7 +1042,7 @@ export class DashboardComponent implements OnInit {
         result.msgParams = { value: match[1], subject: match[2], type: match[3] };
       }
     } else if (notification.type === 'absence_marked') {
-      result.titleKey = 'NOTIFICATIONS.ABSENCE_MARKED_TITLE';
+      if (!notification.title.includes('NOTIFICATIONS.')) result.titleKey = 'NOTIFICATIONS.ABSENCE_MARKED_TITLE';
       // Match: "... absence de 2h en Math le 25/01/2026"
       const match = notification.message.match(/absence de (.*?)h en (.*?) le (.*)/);
       if (match) {
@@ -1040,7 +1050,7 @@ export class DashboardComponent implements OnInit {
         result.msgParams = { duration: match[1], subject: match[2], date: match[3] };
       }
     } else if (notification.type === 'course_added') {
-      result.titleKey = 'NOTIFICATIONS.COURSE_ADDED_TITLE';
+      if (!notification.title.includes('NOTIFICATIONS.')) result.titleKey = 'NOTIFICATIONS.COURSE_ADDED_TITLE';
       // Match: "... cours: Titre du cours en Math"
       const match = notification.message.match(/cours: (.*?) en (.*)/);
       if (match) {

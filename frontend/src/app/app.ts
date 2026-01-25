@@ -14,4 +14,11 @@ import { ConfirmationService } from './core/services/confirmation.service';
 export class App {
   protected readonly title = signal('frontend');
   protected confirmationService = inject(ConfirmationService);
+  protected showSplash = signal(true);
+
+  ngOnInit() {
+    setTimeout(() => {
+      this.showSplash.set(false);
+    }, 2000);
+  }
 }

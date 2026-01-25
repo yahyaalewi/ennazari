@@ -36,8 +36,11 @@ const addGrade = async (req, res) => {
         await createNotificationsForUsers(
             [studentId],
             'grade_added',
-            'Nouvelle Note',
-            `${roleName} ${professorName} a ajouté une note de ${value}/20 en ${subject?.name || 'matière'} (${evaluationType})`
+            'NOTIFICATIONS.GRADE_ADDED_TITLE',
+            'NOTIFICATIONS.GRADE_ADDED_MSG',
+            grade._id,
+            'Grade',
+            { value, subject: subject?.name || 'Matière', type: evaluationType }
         );
 
         res.status(201).json(grade);

@@ -27,6 +27,10 @@ const notificationSchema = new mongoose.Schema({
         type: String,
         enum: ['Course', 'Grade', 'Absence'],
     },
+    params: {
+        type: Object, // Store dynamic data { val: 15, subject: 'Math' }
+        default: {}
+    },
     read: {
         type: Boolean,
         default: false,
