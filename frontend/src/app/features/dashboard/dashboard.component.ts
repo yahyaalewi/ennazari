@@ -66,7 +66,7 @@ import { TranslateModule } from '@ngx-translate/core';
       <main class="main-content">
         <header class="top-header">
           <button class="menu-toggle show-on-mobile" (click)="toggleSidebar()">☰</button>
-          <h1>{{ 'DASHBOARD.TITLE' | translate }}</h1>
+          <h1 class="page-title hide-on-mobile">{{ 'DASHBOARD.TITLE' | translate }}</h1>
           
           <!-- Notifications Bell (Only for Students) -->
           <div class="notifications-container" *ngIf="user()?.role === 'student'">
