@@ -762,15 +762,36 @@ import { TranslateModule } from '@ngx-translate/core';
       [dir="rtl"] .sidebar.open {
         transform: translateX(0);
       }
-      .top-bar {
+      /* Top Bar Fixes for Mobile */
+      .top-header {
         padding: 1rem 1.5rem;
         background: white;
         box-shadow: var(--shadow-sm);
         position: sticky;
         top: 0;
         z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
       }
-      .page-title { font-size: 1.25rem; }
+      .page-title { font-size: 1.25rem; margin: 0; flex: 1; }
+      
+      /* Show date on mobile but make it smaller */
+      .date-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        display: flex !important; /* Force show */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 120px;
+      }
+      /* Hide full text date on very small screens if needed */
+      @media (max-width: 360px) {
+        .date-badge { display: none !important; }
+      }
+
       .content-scrollable { padding: 1.5rem; }
       .brand { margin-bottom: 2rem; }
       
