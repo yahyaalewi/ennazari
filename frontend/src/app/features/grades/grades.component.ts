@@ -113,7 +113,7 @@ import { FormsModule } from '@angular/forms'; // Add import
                 
                 <div class="student-meta">
                   <span class="avg-label">{{ 'GRADES.AVERAGE' | translate }}:</span>
-                  <span class="avg-badge" [ngClass]="getGradeClass(parseFloat(student.average))">{{ student.average }}</span>
+                  <span class="avg-badge" [ngClass]="getGradeClass(student.average)">{{ student.average }}</span>
                   <span class="toggle-icon">{{ student.isExpanded ? '▼' : '▶' }}</span>
                 </div>
               </div>
@@ -646,10 +646,11 @@ export class GradesComponent implements OnInit {
     return (totalScore / totalCoef).toFixed(1);
   }
 
-  getGradeClass(value: number): string {
-    if (value >= 16) return 'excellent';
-    if (value >= 12) return 'good';
-    if (value >= 10) return 'average';
+  getGradeClass(value: number | string): string {
+    const val = typeof value === 'string' ? parseFloat(value) : value;
+    if (val >= 16) return 'excellent';
+    if (val >= 12) return 'good';
+    if (val >= 10) return 'average';
     return 'poor';
   }
 
