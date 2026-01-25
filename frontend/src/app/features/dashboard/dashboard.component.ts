@@ -778,7 +778,7 @@ import { TranslateModule } from '@ngx-translate/core';
         gap: 0.5rem;
         height: 70px; /* Explicit height */
       }
-      .page-title { font-size: 1.1rem; margin: 0; flex: 1; }
+      .page-title { font-size: 1rem; margin: 0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       
       /* Show date on mobile but make it smaller */
       .date-badge {
