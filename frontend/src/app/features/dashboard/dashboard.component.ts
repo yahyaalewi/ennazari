@@ -21,7 +21,7 @@ import { TranslateModule } from '@ngx-translate/core';
       <!-- Sidebar -->
       <aside class="sidebar" [class.open]="isSidebarOpen">
         <div class="brand">
-          <img src="IMG_2156.JPG" alt="Logo" class="logo-img">
+          <img src="logo.jpg" alt="Logo" class="logo-img">
           <span>{{ 'SIDEBAR.APP_NAME' | translate }}</span>
           <button class="close-sidebar show-on-mobile" (click)="toggleSidebar()">✕</button>
         </div>
