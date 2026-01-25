@@ -543,7 +543,6 @@ import { FormsModule } from '@angular/forms'; // Add import
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   `]
-    `]
 })
 export class GradesComponent implements OnInit {
   grades: Grade[] = [];
@@ -674,7 +673,7 @@ export class GradesComponent implements OnInit {
     const translationKey = typeMap[type];
     if (translationKey) {
       let val = type;
-      this.translate.get(`GRADES.EVAL_TYPES.${ translationKey }`).subscribe(v => {
+      this.translate.get(`GRADES.EVAL_TYPES.${translationKey}`).subscribe(v => {
         if (!v.includes(`GRADES.EVAL_TYPES.`)) val = v;
       });
       return val;
@@ -695,7 +694,7 @@ export class GradesComponent implements OnInit {
   getStudentName(grade: Grade): string {
     if (grade.student && typeof grade.student === 'object') {
       const student = grade.student as any;
-      const name = `${ student.firstName || '' } ${ student.lastName || '' }`.trim();
+      const name = `${student.firstName || ''} ${student.lastName || ''}`.trim();
       return name || this.getTranslation('COMMON.UNKNOWN');
     }
     return this.getTranslation('COMMON.UNKNOWN');
@@ -796,7 +795,7 @@ export class GradesComponent implements OnInit {
       this.confirmation.confirm(msgs['COMMON.DELETE'], msgs['GRADES.DELETE_CONFIRM'])
         .then(confirmed => {
           if (confirmed) {
-            this.http.delete(`${ ApiConstants.baseUrl }${ ApiConstants.grades } / ${ gradeId }`)
+            this.http.delete(`${ApiConstants.baseUrl}${ApiConstants.grades}/${gradeId}`)
               .subscribe({
                 next: () => {
                   // Remove from local array
