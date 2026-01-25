@@ -4,6 +4,7 @@ services:
     name: nizari-backend
     env: docker
     dockerContext: backend
+    dockerfilePath: backend/Dockerfile
     plan: free
     autoDeploy: true
     envVars:
@@ -19,5 +20,6 @@ services:
     name: nizari-frontend
     env: docker
     dockerContext: frontend
+    dockerfilePath: frontend/Dockerfile
     plan: free
     autoDeploy: true
