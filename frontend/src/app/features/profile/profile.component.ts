@@ -30,7 +30,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
                   </div>
                   
                   <label for="avatar-input" class="edit-btn" title="{{ 'PROFILE.UPDATE_PHOTO' | translate }}">
-                    <span class="icon">📷</span>
+                    <span class="icon">✏️</span>
                     <input type="file" id="avatar-input" (change)="onFileSelected($event)" accept="image/*" hidden>
                   </label>
                 </div>
@@ -175,23 +175,25 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
       position: absolute;
       bottom: 5px;
       right: 5px;
-      width: 42px;
-      height: 42px;
-      background: var(--primary);
-      color: white;
+      width: 32px; /* Smaller size */
+      height: 32px;
+      background: white; /* White background for contrast */
+      color: var(--text-main);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      border: 1px solid #e2e8f0;
       transition: all 0.2s ease;
+      font-size: 0.9rem; /* Smaller icon */
     }
 
     .edit-btn:hover {
-      transform: scale(1.1);
-      background: var(--primary-dark);
+      transform: scale(1.05);
+      background: #f8fafc;
+      color: var(--primary);
     }
 
     .identity-section {
