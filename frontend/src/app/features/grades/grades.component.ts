@@ -91,40 +91,51 @@ import { FormsModule } from '@angular/forms'; // Add import
         </div>
       </div>
 
-      <!-- Manager/Professor View: Grouped Interface -->
+      <!-- Manager/Professor View: GroupClass -> Student -> Grades -->
       <div class="grouped-container" *ngIf="!loading && grades.length > 0 && user?.role !== 'student'">
         <div *ngFor="let classGroup of groupedGrades" class="class-group-card">
           <div class="class-header">
-            <h2 class="class-title">{{ classGroup.className }}</h2>
-            <span class="badge-count">{{ 'GRADES.COUNT_GRADES' | translate:{count: getTotalGradesInClass(classGroup)} }}</span>
+            <h2 class="class-title">🎓 {{ classGroup.className }}</h2>
+            <div class="action-badges">
+              <span class="badge-count">{{ classGroup.students.length }} {{ 'USERS.STUDENTS' | translate }}</span>
+            </div>
           </div>
 
-          <div class="subjects-list">
-            <div *ngFor="let subjectGroup of classGroup.subjects" class="subject-section">
-              <div class="subject-header">
-                <h3>📚 {{ subjectGroup.subjectName }}</h3>
-                <span class="student-count-badge">{{ subjectGroup.students.length }} {{ 'GRADES.STUDENTS' | translate }}</span>
+          <div class="students-list-container">
+            <div *ngFor="let student of classGroup.students" class="student-expand-card" [class.expanded]="student.isExpanded">
+              
+              <!-- Student Header (Clickable) -->
+              <div class="student-header-row" (click)="toggleStudent(student)">
+                <div class="student-identity">
+                  <div class="student-avatar">{{ student.studentName.charAt(0) }}</div>
+                  <span class="student-name">{{ student.studentName }}</span>
+                </div>
+                
+                <div class="student-meta">
+                  <span class="avg-label">{{ 'GRADES.AVERAGE' | translate }}:</span>
+                  <span class="avg-badge" [ngClass]="getGradeClass(parseFloat(student.average))">{{ student.average }}</span>
+                  <span class="toggle-icon">{{ student.isExpanded ? '▼' : '▶' }}</span>
+                </div>
               </div>
 
-              <div class="students-grid">
-                <div *ngFor="let studentGroup of subjectGroup.students" class="student-card shadow-sm">
-                  <div class="student-header-compact">
-                    <span class="student-avatar">{{ studentGroup.studentName.charAt(0) }}</span>
-                    <div class="student-details">
-                      <h4>{{ studentGroup.studentName }}</h4>
-                      <span class="avg-text">{{ 'GRADES.STUDENT_AVERAGE' | translate }}: <strong>{{ calculateStudentAverage(studentGroup.grades) }}</strong></span>
-                    </div>
-                  </div>
-                  
-                  <div class="grades-mini-list">
-                    <div class="grade-chip" *ngFor="let grade of studentGroup.grades" [ngClass]="getGradeClass(grade.value)">
+              <!-- Expanded Content (Grades) -->
+              <div class="student-grades-content" *ngIf="student.isExpanded">
+                <div *ngFor="let subject of student.subjects" class="subject-row">
+                  <div class="subject-name">📚 {{ subject.subjectName }}</div>
+                  <div class="grades-chips-row">
+                    <div class="grade-chip" *ngFor="let grade of subject.grades" [ngClass]="getGradeClass(grade.value)">
                       <span class="grade-val">{{ grade.value }}</span>
-                      <span class="grade-type-mini" title="{{ getTranslatedEvalType(grade.evaluationType) }}">{{ getTranslatedEvalType(grade.evaluationType).substring(0,3) }}</span>
-                      <button *ngIf="user?.role === 'manager'" class="btn-delete-mini" (click)="deleteGrade(grade._id)" title="{{ 'COMMON.DELETE' | translate }}">×</button>
+                      <span class="grade-type-mini" title="{{ getTranslatedEvalType(grade.evaluationType) }}">
+                        {{ getTranslatedEvalType(grade.evaluationType).substring(0,3) }}
+                      </span>
+                      <button *ngIf="user?.role === 'manager'" class="btn-delete-mini" (click)="deleteGrade(grade._id)" title="{{ 'COMMON.DELETE' | translate }}">
+                        ×
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
         </div>
@@ -345,14 +356,14 @@ import { FormsModule } from '@angular/forms'; // Add import
       font-weight: 600;
     }
 
-    /* Manager View */
+    /* Manager View Updates */
     .class-group-card {
       background: white;
       border-radius: 20px;
       box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
       margin-bottom: 2rem;
-      overflow: hidden;
       border: 1px solid rgba(0,0,0,0.03);
+      overflow: hidden;
     }
 
     .class-header {
@@ -365,99 +376,150 @@ import { FormsModule } from '@angular/forms'; // Add import
     }
 
     .class-title { margin: 0; font-size: 1.5rem; color: var(--text-main); font-weight: 700; }
-    .badge-count { background: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: var(--primary); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    .badge-count { background: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: var(--primary); }
 
-    .subjects-list { padding: 1.5rem; }
-    .subject-section { margin-bottom: 2rem; }
-    .subject-section:last-child { margin-bottom: 0; }
-    
-    .subject-header {
+    .students-list-container {
+      padding: 1rem;
       display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-    
-    .subject-header h3 { margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
-    .student-count-badge { font-size: 0.8rem; background: #eef2ff; color: #4338ca; padding: 0.2rem 0.6rem; border-radius: 6px; }
-
-    .students-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1rem;
+      flex-direction: column;
+      gap: 0.75rem;
     }
 
-    .student-card {
+    .student-expand-card {
       background: #fff;
       border: 1px solid #f1f5f9;
       border-radius: 12px;
-      padding: 1rem;
+      overflow: hidden;
       transition: all 0.2s ease;
     }
-    .student-card:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0,0,0,0.05); border-color: #e2e8f0; }
 
-    .student-header-compact {
+    .student-expand-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+    
+    .student-expand-card.expanded {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+    }
+
+    .student-header-row {
+      padding: 1rem;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-      padding-bottom: 0.75rem;
+      cursor: pointer;
+      background: white;
+    }
+
+    .student-expand-card.expanded .student-header-row {
+      background: #f8fafc;
       border-bottom: 1px solid #f1f5f9;
     }
 
+    .student-identity { display: flex; align-items: center; gap: 1rem; }
+    
     .student-avatar {
       width: 40px; height: 40px;
-      background: linear-gradient(135deg, #cbd5e1, #94a3b8);
-      color: white;
-      border-radius: 10px;
+      background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+      color: var(--text-main);
+      border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-weight: 700;
+      font-size: 1.1rem;
     }
 
-    .student-details h4 { margin: 0; font-size: 1rem; color: var(--text-main); }
-    .avg-text { font-size: 0.8rem; color: var(--text-muted); }
-    .avg-text strong { color: var(--text-main); }
+    .student-expand-card.expanded .student-avatar {
+      background: var(--primary);
+      color: white;
+    }
 
-    .grades-mini-list {
+    .student-name { font-weight: 600; font-size: 1.05rem; color: var(--text-main); }
+
+    .student-meta { display: flex; align-items: center; gap: 1rem; }
+    
+    .avg-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: white;
+    }
+    .avg-badge.excellent { background: #10b981; }
+    .avg-badge.good { background: #3b82f6; }
+    .avg-badge.average { background: #f59e0b; }
+    .avg-badge.poor { background: #ef4444; }
+
+    .toggle-icon { font-size: 0.8rem; color: var(--text-muted); transition: transform 0.2s; }
+    .student-expand-card.expanded .toggle-icon { transform: rotate(180deg); }
+
+    .student-grades-content {
+      padding: 1.5rem;
+      background: #fff;
+      animation: slideDown 0.2s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .subject-row {
+      margin-bottom: 1.5rem;
+      border-bottom: 1px dashed #e2e8f0;
+      padding-bottom: 1rem;
+    }
+    .subject-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+    .subject-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .grades-chips-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 0.75rem;
     }
 
     .grade-chip {
       background: #f1f5f9;
       border-radius: 8px;
-      padding: 0.25rem 0.5rem;
+      padding: 0.35rem 0.75rem;
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      font-size: 0.85rem;
+      gap: 0.5rem;
+      font-size: 0.9rem;
       font-weight: 600;
-      position: relative;
+      border: 1px solid transparent;
     }
 
-    .grade-chip.excellent { background: #d1fae5; color: #065f46; }
-    .grade-chip.good { background: #dbeafe; color: #1e40af; }
-    .grade-chip.average { background: #fef3c7; color: #92400e; }
-    .grade-chip.poor { background: #fee2e2; color: #991b1b; }
+    .grade-chip.excellent { background: #ecfdf5; color: #047857; border-color: #d1fae5; }
+    .grade-chip.good { background: #eff6ff; color: #1d4ed8; border-color: #dbeafe; }
+    .grade-chip.average { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+    .grade-chip.poor { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
 
-    .grade-type-mini { font-size: 0.65rem; opacity: 0.7; text-transform: uppercase; }
-    
+    .grade-type-mini { font-size: 0.7rem; opacity: 0.7; text-transform: uppercase; margin-left: 5px; }
+
     .btn-delete-mini {
-      background: rgba(0,0,0,0.1);
+      background: rgba(0,0,0,0.05);
       border: none;
       border-radius: 50%;
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.8rem;
       cursor: pointer;
       color: currentColor;
       padding: 0;
+      margin-left: 5px;
     }
-    .btn-delete-mini:hover { background: rgba(0,0,0,0.2); }
+    .btn-delete-mini:hover { background: rgba(0,0,0,0.15); }
 
-    /* Empty State */
+    /* Empty State, Loaders */
     .empty-state {
       text-align: center;
       padding: 4rem 2rem;
@@ -481,6 +543,7 @@ import { FormsModule } from '@angular/forms'; // Add import
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   `]
+    `]
 })
 export class GradesComponent implements OnInit {
   grades: Grade[] = [];
@@ -490,9 +553,14 @@ export class GradesComponent implements OnInit {
   // ... existing properties ...
   groupedGrades: {
     className: string;
-    subjects: {
-      subjectName: string;
-      students: { studentName: string; grades: Grade[] }[];
+    students: {
+      studentName: string;
+      average: string;
+      isExpanded: boolean;
+      subjects: {
+        subjectName: string;
+        grades: Grade[];
+      }[];
     }[];
   }[] = [];
   loading = false;
@@ -545,7 +613,7 @@ export class GradesComponent implements OnInit {
 
     // Re-group if not student
     if (this.user?.role !== 'student') {
-      this.groupGradesByClassSubjectAndStudent();
+      this.groupGradesByClassAndStudent();
     }
   }
 
@@ -606,7 +674,7 @@ export class GradesComponent implements OnInit {
     const translationKey = typeMap[type];
     if (translationKey) {
       let val = type;
-      this.translate.get(`GRADES.EVAL_TYPES.${translationKey}`).subscribe(v => {
+      this.translate.get(`GRADES.EVAL_TYPES.${ translationKey }`).subscribe(v => {
         if (!v.includes(`GRADES.EVAL_TYPES.`)) val = v;
       });
       return val;
@@ -627,7 +695,7 @@ export class GradesComponent implements OnInit {
   getStudentName(grade: Grade): string {
     if (grade.student && typeof grade.student === 'object') {
       const student = grade.student as any;
-      const name = `${student.firstName || ''} ${student.lastName || ''}`.trim();
+      const name = `${ student.firstName || '' } ${ student.lastName || '' }`.trim();
       return name || this.getTranslation('COMMON.UNKNOWN');
     }
     return this.getTranslation('COMMON.UNKNOWN');
@@ -649,25 +717,19 @@ export class GradesComponent implements OnInit {
     return val;
   }
 
-  groupGradesByClassSubjectAndStudent() {
-    // Map structure: Class -> Subject -> Student -> Grades[]
-    const classMap = new Map<string, Map<string, Map<string, Grade[]>>>();
+  groupGradesByClassAndStudent() {
+    // Map structure: Class -> Student -> Grades[]
+    const classMap = new Map<string, Map<string, Grade[]>>();
 
     this.grades.forEach(grade => {
       const className = this.getClassName(grade);
-      const subjectName = this.getSubjectName(grade);
       const studentName = this.getStudentName(grade);
 
       if (!classMap.has(className)) {
-        classMap.set(className, new Map<string, Map<string, Grade[]>>());
+        classMap.set(className, new Map<string, Grade[]>());
       }
 
-      const subjectMap = classMap.get(className)!;
-      if (!subjectMap.has(subjectName)) {
-        subjectMap.set(subjectName, new Map<string, Grade[]>());
-      }
-
-      const studentMap = subjectMap.get(subjectName)!;
+      const studentMap = classMap.get(className)!;
       if (!studentMap.has(studentName)) {
         studentMap.set(studentName, []);
       }
@@ -676,36 +738,51 @@ export class GradesComponent implements OnInit {
     });
 
     const getClassOrder = (className: string): number => {
-      // Handle French ordinal numbers: 1ère, 2ème, 3ème, etc.
       const ordinalMatch = className.match(/(\d+)(ère|ème|e)/i);
-      if (ordinalMatch) {
-        return parseInt(ordinalMatch[1]);
-      }
-
-      // Fallback to any number in the string
+      if (ordinalMatch) return parseInt(ordinalMatch[1]);
       const match = className.match(/(\d+)/);
       return match ? parseInt(match[1]) : 999;
     };
 
     this.groupedGrades = Array.from(classMap.entries())
-      .map(([className, subjectMap]) => ({
-        className,
-        subjects: Array.from(subjectMap.entries())
-          .map(([subjectName, studentMap]) => ({
-            subjectName,
-            students: Array.from(studentMap.entries())
-              .map(([studentName, grades]) => ({ studentName, grades }))
-              .sort((a, b) => a.studentName.localeCompare(b.studentName))
-          }))
-          .sort((a, b) => a.subjectName.localeCompare(b.subjectName))
-      }))
+      .map(([className, studentMap]) => {
+        const students = Array.from(studentMap.entries())
+          .map(([studentName, grades]) => {
+            // Group grades by subject within the student
+            const subjectMap = new Map<string, Grade[]>();
+            grades.forEach(g => {
+              const subj = this.getSubjectName(g);
+              if (!subjectMap.has(subj)) subjectMap.set(subj, []);
+              subjectMap.get(subj)!.push(g);
+            });
+
+            const subjects = Array.from(subjectMap.entries())
+              .map(([subjectName, subjectGrades]) => ({ subjectName, grades: subjectGrades }))
+              .sort((a, b) => a.subjectName.localeCompare(b.subjectName));
+
+            return {
+              studentName,
+              grades, // optimize: we might not need this flat list if we have subjects, but useful for avg
+              average: this.calculateStudentAverage(grades),
+              isExpanded: false,
+              subjects
+            };
+          })
+          .sort((a, b) => a.studentName.localeCompare(b.studentName));
+
+        return { className, students };
+      })
       .sort((a, b) => getClassOrder(a.className) - getClassOrder(b.className));
   }
 
+  toggleStudent(student: any) {
+    student.isExpanded = !student.isExpanded;
+  }
+
   getTotalGradesInClass(classGroup: any): number {
-    return classGroup.subjects.reduce((total: number, subject: any) =>
-      total + subject.students.reduce((subTotal: number, student: any) =>
-        subTotal + student.grades.length, 0), 0);
+    return classGroup.students.reduce((total: number, student: any) =>
+      total + student.subjects.reduce((subTotal: number, Subj: any) =>
+        subTotal + Subj.grades.length, 0), 0);
   }
 
   calculateStudentAverage(grades: Grade[]): string {
@@ -719,14 +796,14 @@ export class GradesComponent implements OnInit {
       this.confirmation.confirm(msgs['COMMON.DELETE'], msgs['GRADES.DELETE_CONFIRM'])
         .then(confirmed => {
           if (confirmed) {
-            this.http.delete(`${ApiConstants.baseUrl}${ApiConstants.grades}/${gradeId}`)
+            this.http.delete(`${ ApiConstants.baseUrl }${ ApiConstants.grades } / ${ gradeId }`)
               .subscribe({
                 next: () => {
                   // Remove from local array
                   this.grades = this.grades.filter(g => g._id !== gradeId);
                   // Regroup if needed
                   if (this.user?.role !== 'student') {
-                    this.groupGradesByClassSubjectAndStudent();
+                    this.groupGradesByClassAndStudent();
                   }
                   this.translate.get('GRADES.DELETE_SUCCESS').subscribe(msg => {
                     this.toastService.success(msg || 'Note supprimée avec succès');
