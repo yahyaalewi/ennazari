@@ -1,5 +1,7 @@
+import { environment } from '../../../environments/environment';
+
 export const ApiConstants = {
-    baseUrl: 'http://localhost:5000/api',
+    baseUrl: environment.apiUrl,
     auth: {
         login: '/auth/login',
         register: '/auth/register'
