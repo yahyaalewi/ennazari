@@ -25,6 +25,8 @@ const userSchema = new mongoose.Schema({
     subjects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subject' }], // For professor
     classId: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' }, // For student
     profilePicture: { type: String },
+    failedLoginAttempts: { type: Number, default: 0 },
+    isLocked: { type: Boolean, default: false },
 }, {
     timestamps: true,
 });

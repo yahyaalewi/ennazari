@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getUsers, createUser, updateUser, deleteUser, updateProfilePicture, uploadProfile, getProfile } = require('../controllers/userController');
+const { getUsers, createUser, updateUser, deleteUser, updateProfilePicture, uploadProfile, getProfile, unlockUser } = require('../controllers/userController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.get('/profile', protect, getProfile);
@@ -9,6 +9,8 @@ router.route('/')
     .post(protect, authorize('manager'), createUser);
 
 router.patch('/profile-picture', protect, uploadProfile.single('image'), updateProfilePicture);
+
+router.put('/:id/unlock', protect, authorize('manager'), unlockUser);
 
 router.route('/:id')
     .put(protect, authorize('manager'), updateUser)

@@ -159,9 +159,13 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
                   <h3>{{ user.firstName }} {{ user.lastName }}</h3>
                   <p class="email">{{ user.email }}</p>
                 </div>
+                <span *ngIf="user.isLocked" class="locked-badge" title="{{ 'USERS.LOCKED' | translate }}">🔒</span>
                 <span class="role-badge role-student">{{ 'USERS.STUDENT' | translate }}</span>
               </div>
               <div class="user-actions">
+                <button *ngIf="user.isLocked" class="btn-unlock" (click)="unlockUser(user)" title="{{ 'USERS.UNLOCK' | translate }}">
+                  🔓 {{ 'USERS.UNLOCK' | translate }}
+                </button>
                 <button class="btn-edit" (click)="editUser(user)">✏️ {{ 'COMMON.EDIT' | translate }}</button>
                 <button class="btn-delete" (click)="deleteUser(user._id)">🗑️ {{ 'COMMON.DELETE' | translate }}</button>
               </div>
@@ -617,6 +621,34 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
       color: var(--text-muted);
     }
 
+    .locked-badge {
+      font-size: 1.2rem;
+      margin-right: 0.5rem;
+      cursor: help;
+    }
+
+    [dir="rtl"] .locked-badge {
+      margin-right: 0;
+      margin-left: 0.5rem;
+    }
+
+    .btn-unlock {
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.9rem;
+      background: #fef9c3;
+      color: #854d0e;
+      border: 1px solid #fde047;
+    }
+
+    .btn-unlock:hover {
+      background: #fde047;
+    }
+
     .user-actions {
       display: flex;
       gap: 0.75rem;
@@ -882,6 +914,34 @@ export class UsersComponent implements OnInit {
                 error: (err: any) => {
                   this.toastService.error(err.error?.message || 'Erreur lors de la suppression');
                   console.error(err);
+                }
+              });
+          }
+        });
+    });
+  }
+
+  unlockUser(user: User) {
+    this.translate.get(['USERS.UNLOCK_CONFIRM', 'USERS.UNLOCK']).subscribe(msgs => {
+      this.confirmation.confirm(msgs['USERS.UNLOCK'], msgs['USERS.UNLOCK_CONFIRM'] || 'Voulez-vous débloquer cet utilisateur ?')
+        .then(confirmed => {
+          if (confirmed) {
+            this.http.put(`${ApiConstants.baseUrl}${ApiConstants.users}/${user._id}/unlock`, {})
+              .subscribe({
+                next: (res: any) => {
+                  user.isLocked = false;
+                  // Update backup list too if needed
+                  const u = this.allUsers.find(au => au._id === user._id);
+                  if (u) u.isLocked = false;
+
+                  this.translate.get('USERS.UNLOCK_SUCCESS').subscribe(msg => {
+                    this.toastService.success(msg || 'Compte débloqué avec succès');
+                  });
+                },
+                error: (err) => {
+                  this.translate.get('USERS.UNLOCK_ERROR').subscribe(msg => {
+                    this.toastService.error(err.error?.message || msg || 'Erreur lors du déblocage');
+                  });
                 }
               });
           }

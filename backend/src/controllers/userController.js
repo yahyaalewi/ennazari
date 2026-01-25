@@ -188,6 +188,27 @@ const getProfile = async (req, res) => {
     }
 };
 
+const unlockUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (user) {
+            user.isLocked = false;
+            user.failedLoginAttempts = 0;
+            const updatedUser = await user.save();
+            res.json({
+                _id: updatedUser._id,
+                email: updatedUser.email,
+                isLocked: updatedUser.isLocked,
+                message: 'Compte débloqué avec succès'
+            });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getUsers,
     createUser,
@@ -195,5 +216,6 @@ module.exports = {
     deleteUser,
     updateProfilePicture,
     uploadProfile,
-    getProfile
+    getProfile,
+    unlockUser
 };

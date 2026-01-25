@@ -18,7 +18,22 @@ const loginUser = async (req, res) => {
             .populate('classId', 'name')
             .populate('subjects', 'name');
 
-        if (user && (await user.matchPassword(password))) {
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        // Check if locked
+        if (user.isLocked) {
+            return res.status(403).json({
+                message: 'Compte bloqué après 5 tentatives échouées. Veuillez contacter l\'administrateur.'
+            });
+        }
+
+        if (await user.matchPassword(password)) {
+            // Reset attempts on successful login
+            user.failedLoginAttempts = 0;
+            await user.save();
+
             res.json({
                 _id: user._id,
                 firstName: user.firstName,
@@ -31,6 +46,18 @@ const loginUser = async (req, res) => {
                 token: generateToken(user._id, user.role),
             });
         } else {
+            // Increment failed attempts for students and professors
+            if (user.role !== 'manager') {
+                user.failedLoginAttempts += 1;
+                if (user.failedLoginAttempts >= 5) {
+                    user.isLocked = true;
+                    await user.save();
+                    return res.status(403).json({
+                        message: 'Compte bloqué après 5 tentatives échouées. Veuillez contacter l\'administrateur.'
+                    });
+                }
+                await user.save();
+            }
             res.status(401).json({ message: 'Invalid email or password' });
         }
     } catch (error) {

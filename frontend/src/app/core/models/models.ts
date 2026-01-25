@@ -8,6 +8,7 @@ export interface User {
     classId?: any; // Can be string ID or populated Class object
     subjects?: any[]; // Can be string IDs or populated Subject objects
     profilePicture?: string;
+    isLocked?: boolean;
 }
 
 export interface Class {
