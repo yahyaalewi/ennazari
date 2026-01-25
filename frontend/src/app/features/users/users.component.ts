@@ -833,6 +833,9 @@ export class UsersComponent implements OnInit {
   }
 
   getProfilePicture(path: string): string {
-    return `http://localhost:5000${path}`;
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    const baseUrl = ApiConstants.baseUrl.replace('/api', '');
+    return `${baseUrl}${path}`;
   }
 }
