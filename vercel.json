@@ -1,0 +1,11 @@
+{
+    "buildCommand": "cd frontend && npx ng build --configuration=development --output-path=dist/frontend",
+    "outputDirectory": "frontend/dist/frontend",
+    "framework": "angular",
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}
