@@ -75,7 +75,7 @@ button {
 /* RTL Support */
 [dir="rtl"],
 .rtl {
-  font-family: 'Noto Sans Arabic', 'Outfit', sans-serif;
+  font-family: 'Cairo', 'Outfit', sans-serif;
 }
 
 [dir="rtl"] .sidebar {
