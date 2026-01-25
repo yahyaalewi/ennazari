@@ -196,7 +196,13 @@
     "NOTIFICATIONS": {
         "TITLE": "Notifications",
         "MARK_ALL_READ": "Tout marquer comme lu",
-        "EMPTY": "Aucune notification"
+        "EMPTY": "Aucune notification",
+        "GRADE_ADDED_TITLE": "Nouvelle Note",
+        "GRADE_ADDED_MSG": "Nouvelle note: {{value}}/20 en {{subject}}",
+        "ABSENCE_MARKED_TITLE": "Nouvelle Absence",
+        "ABSENCE_MARKED_MSG": "Absence de {{duration}}h en {{subject}} le {{date}}",
+        "COURSE_ADDED_TITLE": "Nouveau Cours",
+        "COURSE_ADDED_MSG": "Nouveau cours: {{title}} en {{subject}}"
     },
     "COMMON": {
         "SAVE": "Enregistrer",

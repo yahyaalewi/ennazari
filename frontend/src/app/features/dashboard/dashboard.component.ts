@@ -93,8 +93,8 @@ import { TranslateModule } from '@ngx-translate/core';
                     {{ getNotificationIcon(notification.type) }}
                   </div>
                   <div class="notification-content">
-                    <div class="notification-title">{{ notification.title }}</div>
-                    <div class="notification-message">{{ notification.message }}</div>
+                    <div class="notification-title">{{ getNotificationData(notification).titleKey | translate: getNotificationData(notification).titleParams }}</div>
+                    <div class="notification-message">{{ getNotificationData(notification).msgKey | translate: getNotificationData(notification).msgParams }}</div>
                     <div class="notification-time">{{ notification.createdAt | date:'short' }}</div>
                   </div>
                   <button class="delete-btn" (click)="deleteNotification(notification._id, $event)">×</button>
@@ -1012,5 +1012,43 @@ export class DashboardComponent implements OnInit {
   logout(event?: Event) {
     if (event) event.stopPropagation();
     this.authService.logout();
+  }
+
+  getNotificationData(notification: Notification): { titleKey: string, titleParams: any, msgKey: string, msgParams: any } {
+    // Default fallback (use raw backend strings if no match)
+    const result = {
+      titleKey: notification.title,
+      titleParams: {},
+      msgKey: notification.message,
+      msgParams: {}
+    };
+
+    if (notification.type === 'grade_added') {
+      result.titleKey = 'NOTIFICATIONS.GRADE_ADDED_TITLE';
+      // Match: "Professor Name a ajouté une note de 15/20 en Math (Devoir)"
+      const match = notification.message.match(/note de ([\d\.]+)\/20 en (.*?) \((.*)\)/);
+      if (match) {
+        result.msgKey = 'NOTIFICATIONS.GRADE_ADDED_MSG';
+        result.msgParams = { value: match[1], subject: match[2], type: match[3] };
+      }
+    } else if (notification.type === 'absence_marked') {
+      result.titleKey = 'NOTIFICATIONS.ABSENCE_MARKED_TITLE';
+      // Match: "... absence de 2h en Math le 25/01/2026"
+      const match = notification.message.match(/absence de (.*?)h en (.*?) le (.*)/);
+      if (match) {
+        result.msgKey = 'NOTIFICATIONS.ABSENCE_MARKED_MSG';
+        result.msgParams = { duration: match[1], subject: match[2], date: match[3] };
+      }
+    } else if (notification.type === 'course_added') {
+      result.titleKey = 'NOTIFICATIONS.COURSE_ADDED_TITLE';
+      // Match: "... cours: Titre du cours en Math"
+      const match = notification.message.match(/cours: (.*?) en (.*)/);
+      if (match) {
+        result.msgKey = 'NOTIFICATIONS.COURSE_ADDED_MSG';
+        result.msgParams = { title: match[1], subject: match[2] };
+      }
+    }
+
+    return result;
   }
 }
