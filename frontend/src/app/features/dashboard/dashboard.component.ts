@@ -787,7 +787,7 @@ import { TranslateModule } from '@ngx-translate/core';
       [dir="rtl"] .menu-toggle { margin-left: 0.5rem; margin-right: 0; }
 
       .page-title { 
-        display: none; /* Hide title completely on mobile to save space */
+        display: none !important; /* Hide title completely on mobile to save space */
       }
       
       /* Optimize date display */
