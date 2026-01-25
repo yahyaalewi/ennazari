@@ -29,6 +29,18 @@
             ],
             "styles": [
               "src/styles.css"
+            ],
+            "budgets": [
+              {
+                "type": "initial",
+                "maximumWarning": "50MB",
+                "maximumError": "100MB"
+              },
+              {
+                "type": "anyComponentStyle",
+                "maximumWarning": "50MB",
+                "maximumError": "100MB"
+              }
             ]
           },
           "configurations": {
