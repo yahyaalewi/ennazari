@@ -14,7 +14,7 @@ import { I18nService } from '../../../core/services/i18n.service';
     <div class="login-container">
       <div class="glass-card">
         <div class="brand-header">
-          <div class="logo-icon">🎓</div>
+          <img src="logo.jpg" alt="Ennazari Logo" class="brand-logo">
           <h2>{{ 'LOGIN.WELCOME' | translate }}</h2>
           <p>{{ 'LOGIN.SUBTITLE' | translate }}</p>
         </div>
@@ -84,9 +84,18 @@ import { I18nService } from '../../../core/services/i18n.service';
     
     .brand-header {
       text-align: center;
-      margin-bottom: 2.5rem;
+      margin-bottom: 2rem;
     }
-    .logo-icon { font-size: 3rem; margin-bottom: 1rem; }
+    
+    .brand-logo {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      margin-bottom: 1.5rem;
+      border-radius: 50%; /* Optional: if the logo should be round */
+      /* filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); */
+    }
+
     h2 { color: var(--text-main); font-size: 1.8rem; margin-bottom: 0.5rem; }
     p { color: var(--text-muted); font-size: 0.95rem; }
     
@@ -212,7 +221,7 @@ import { I18nService } from '../../../core/services/i18n.service';
         margin: 1.5rem;
         border-radius: 16px;
       }
-      .logo-icon { font-size: 2.5rem; }
+      .brand-logo { width: 100px; height: 100px; }
       h2 { font-size: 1.5rem; }
       .blob { filter: blur(40px); }
     }
