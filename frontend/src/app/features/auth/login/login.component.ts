@@ -72,38 +72,33 @@ import { I18nService } from '../../../core/services/i18n.service';
       position: relative;
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(12px);
-      padding: 3rem;
+      padding: 2.5rem;
       border-radius: 24px;
       box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.4);
       width: 100%;
-      max-width: 420px;
-      min-height: 620px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      max-width: 400px;
       z-index: 10;
       animation: floatUp 0.6s ease-out;
     }
     
     .brand-header {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
     
     .brand-logo {
       width: 120px;
       height: 120px;
       object-fit: contain;
-      margin-bottom: 1.5rem;
-      border-radius: 50%; /* Optional: if the logo should be round */
-      /* filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); */
+      margin-bottom: 1rem;
+      border-radius: 50%;
     }
 
-    h2 { color: var(--text-main); font-size: 1.8rem; margin-bottom: 0.5rem; }
-    p { color: var(--text-muted); font-size: 0.95rem; }
+    h2 { color: var(--text-main); font-size: 1.6rem; margin-bottom: 0.25rem; }
+    p { color: var(--text-muted); font-size: 0.9rem; }
     
-    .form-group { margin-bottom: 1.5rem; }
+    .form-group { margin-bottom: 1.25rem; }
     label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-main); font-size: 0.9rem; }
     
     .input-wrapper {
