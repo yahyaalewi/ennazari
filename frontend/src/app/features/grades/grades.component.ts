@@ -24,14 +24,15 @@ import { FormsModule } from '@angular/forms'; // Add import
         </div>
         
         <!-- Search Bar -->
-        <div class="search-container">
+        <!-- Search Bar -->
+        <div class="search-container" *ngIf="user?.role !== 'student'">
           <div class="search-box">
             <span class="search-icon">🔍</span>
             <input 
               type="text" 
               [(ngModel)]="searchQuery" 
               (ngModelChange)="filterGrades()"
-              [placeholder]="(user?.role === 'student' ? 'GRADES.SEARCH_SUBJECT' : 'GRADES.SEARCH_MANAGER') | translate"
+              [placeholder]="'GRADES.SEARCH_MANAGER' | translate"
             >
             <button *ngIf="searchQuery" class="clear-search" (click)="searchQuery = ''; filterGrades()">×</button>
           </div>

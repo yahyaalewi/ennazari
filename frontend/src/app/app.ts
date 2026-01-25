@@ -1,8 +1,9 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ToastContainerComponent } from './core/components/toast-container.component';
 import { ConfirmModalComponent } from './core/components/confirm-modal.component';
 import { ConfirmationService } from './core/services/confirmation.service';
+import { UiService } from './core/services/ui.service';
 
 @Component({
   selector: 'app-root',
@@ -12,13 +13,7 @@ import { ConfirmationService } from './core/services/confirmation.service';
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('frontend');
+  protected uiService = inject(UiService);
   protected confirmationService = inject(ConfirmationService);
-  protected showSplash = signal(true);
-
-  ngOnInit() {
-    setTimeout(() => {
-      this.showSplash.set(false);
-    }, 2000);
-  }
+  // showSplash and logic moved to UiService
 }

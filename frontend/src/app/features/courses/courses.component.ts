@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms'; // Add FormsModule
 import { ApiConstants } from '../../core/constants/api.constants';
 import { Course, User } from '../../core/models/models';
 import { AuthService } from '../../core/services/auth.service';
@@ -12,7 +13,7 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
 @Component({
   selector: 'app-courses',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, FormsModule], // Add FormsModule
   template: `
     <div class="courses-page">
       <div class="page-header">
@@ -20,6 +21,21 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
           <h2>📚 {{ 'COURSES.TITLE' | translate }}</h2>
           <p class="subtitle">{{ 'COURSES.SUBTITLE' | translate }}</p>
         </div>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input 
+              type="text" 
+              [(ngModel)]="searchQuery" 
+              (ngModelChange)="filterCourses()"
+              [placeholder]="'COMMON.SEARCH' | translate"
+            >
+            <button *ngIf="searchQuery" class="clear-search" (click)="searchQuery = ''; filterCourses()">×</button>
+          </div>
+        </div>
+
         <button *ngIf="user?.role !== 'student'" class="btn-add" (click)="navigateToUpload()">
           <span class="icon">➕</span> {{ 'COURSES.UPLOAD_COURSE' | translate }}
         </button>
@@ -30,13 +46,13 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
         <p>{{ 'COURSES.LOADING' | translate }}</p>
       </div>
       
-      <div *ngIf="!loading && courses.length === 0" class="empty-state">
+      <div *ngIf="!loading && filteredCourses.length === 0" class="empty-state">
         <div class="empty-icon">📭</div>
         <h3>{{ 'COURSES.EMPTY_TITLE' | translate }}</h3>
         <p>{{ 'COURSES.EMPTY_SUBTITLE' | translate }}</p>
       </div>
 
-      <div *ngIf="!loading && courses.length > 0">
+      <div *ngIf="!loading && filteredCourses.length > 0">
         <div *ngFor="let classGroup of groupedCourses" class="class-group">
           <div class="class-header">
             <h2>🎓 {{ classGroup.className }}</h2>
@@ -95,12 +111,72 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
     [dir="rtl"] .btn-add .icon { order: 2; }
     [dir="rtl"] .class-header h2 { order: 2; }
     [dir="rtl"] .subject-header h3 { order: 2; }
+    [dir="rtl"] .search-icon { margin-left: 0.75rem; margin-right: 0; }
+    [dir="rtl"] .clear-search { margin-right: 0.5rem; margin-left: 0; }
 
     .page-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    /* Search Bar Styles */
+    .search-container {
+      flex: 1;
+      min-width: 250px;
+      max-width: 400px;
+    }
+    
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 50px; /* Pillow shape for premium feel */
+      padding: 0.5rem 1rem;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .search-box:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+      transform: translateY(-1px);
+    }
+    
+    .search-icon {
+      margin-right: 0.75rem;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      background: transparent;
+    }
+    
+    .clear-search {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.25rem;
+      padding: 0;
+      line-height: 1;
+      margin-left: 0.5rem;
+      transition: color 0.2s;
+    }
+
+    .clear-search:hover {
+      color: var(--danger);
     }
 
     h2 {
@@ -109,6 +185,7 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
       margin-bottom: 0.5rem;
     }
 
+    /* ... rest of styles ... */
     .subtitle {
       color: var(--text-muted);
       font-size: 1rem;
@@ -397,6 +474,9 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
 
 export class CoursesComponent implements OnInit {
   courses: Course[] = [];
+  filteredCourses: Course[] = []; // Filtered list
+  searchQuery = ''; // Search query
+
   groupedCourses: {
     className: string;
     subjects: { subjectName: string; courses: Course[] }[];
@@ -419,14 +499,30 @@ export class CoursesComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.courses = data;
-          this.groupCoursesByClassAndSubject();
+          this.filterCourses(); // Initial filter
           this.loading = false;
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error(err);
           this.loading = false;
         }
       });
+  }
+
+  filterCourses() {
+    const query = this.searchQuery.toLowerCase().trim();
+    if (!query) {
+      this.filteredCourses = [...this.courses];
+    } else {
+      this.filteredCourses = this.courses.filter(course => {
+        const title = course.title?.toLowerCase() || '';
+        const subject = this.getSubjectName(course).toLowerCase();
+        const professor = this.getProfessorName(course).toLowerCase();
+        return title.includes(query) || subject.includes(query) || professor.includes(query);
+      });
+    }
+    this.groupCoursesByClassAndSubject();
   }
 
   getFileUrl(path: string): string {
@@ -448,7 +544,7 @@ export class CoursesComponent implements OnInit {
                 next: () => {
                   // Use a more robust filter and ensure a new array reference
                   this.courses = [...this.courses.filter(c => String(c._id) !== String(id))];
-                  this.groupCoursesByClassAndSubject();
+                  this.filterCourses();
                   this.cdr.detectChanges(); // Force UI update
                   this.translate.get('COURSES.DELETE_SUCCESS').subscribe(msg => {
                     this.toastService.success(msg || 'Cours supprimé avec succès');
@@ -498,7 +594,7 @@ export class CoursesComponent implements OnInit {
   groupCoursesByClassAndSubject() {
     const classMap = new Map<string, Map<string, Course[]>>();
 
-    this.courses.forEach(course => {
+    this.filteredCourses.forEach(course => {
       const className = this.getClassName(course);
       const subjectName = this.getSubjectName(course);
 

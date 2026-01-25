@@ -8,6 +8,7 @@ import { NotificationService } from '../../core/services/notification.service';
 import { User, Notification } from '../../core/models/models';
 import { ApiConstants } from '../../core/constants/api.constants';
 import { TranslateModule } from '@ngx-translate/core';
+import { UiService } from '../../core/services/ui.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -973,9 +974,15 @@ export class DashboardComponent implements OnInit {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
 
+  protected uiService = inject(UiService);
+
   navigate(path: string) {
     if (window.innerWidth <= 768) {
       this.isSidebarOpen = false;
+    }
+    // Only trigger splash if we are actually changing routes or user explicit click
+    if (!this.isActive(path)) {
+      this.uiService.triggerSplash();
     }
     this.router.navigate([path]).catch(err => console.error('Nav error', err));
   }
