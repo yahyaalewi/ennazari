@@ -790,17 +790,19 @@ import { TranslateModule } from '@ngx-translate/core';
         display: none !important; /* Hide title completely on mobile to save space */
       }
       
-      /* Optimize date display */
+      /* Optimize date display - Centered */
       .date-badge {
-        font-size: 0.7rem;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.75rem;
         padding: 0.2rem 0.5rem;
         background: #f1f5f9; /* softer bg */
         display: flex !important;
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100px;
-        min-width: 0; /* allows shrinking */
+        border-radius: 12px;
+        font-weight: 600;
+        color: var(--text-main);
       }
       
       @media (max-width: 340px) {
