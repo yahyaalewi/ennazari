@@ -767,13 +767,16 @@ import { TranslateModule } from '@ngx-translate/core';
         padding: 1rem 1.5rem;
         background: white;
         box-shadow: var(--shadow-sm);
-        position: sticky;
+        position: fixed; /* Force fixed */
         top: 0;
+        left: 0;
+        right: 0;
         z-index: 50;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 0.5rem;
+        height: 70px; /* Explicit height */
       }
       .page-title { font-size: 1.25rem; margin: 0; flex: 1; }
       
@@ -792,7 +795,14 @@ import { TranslateModule } from '@ngx-translate/core';
         .date-badge { display: none !important; }
       }
 
-      .content-scrollable { padding: 1.5rem; }
+      /* Add margins to content so it's not hidden behind fixed header */
+      .content-scrollable { 
+        padding: 1.5rem; 
+        margin-top: 70px; /* Match header height */
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+      }
+
       .brand { margin-bottom: 2rem; }
       
       .close-sidebar {
