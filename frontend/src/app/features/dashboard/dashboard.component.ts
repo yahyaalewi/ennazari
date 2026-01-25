@@ -819,6 +819,35 @@ import { TranslateModule } from '@ngx-translate/core';
       .close-sidebar {
         display: flex;
       }
+
+      /* Mobile Notifications: Center Modal Style */
+      .notifications-dropdown {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Perfectly centered */
+        width: 90%;
+        max-width: 350px;
+        max-height: 80vh;
+        z-index: 2000;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(0,0,0,0.1);
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      /* Add backdrop specifically for mobile notifications if possible, 
+         but since we can't easily add a div, box-shadow hack or relying on click-outside */
+      .notifications-dropdown::before {
+        content: '';
+        position: fixed;
+        top: -100vh;
+        left: -100vw;
+        right: -100vw;
+        bottom: -100vh;
+        background: rgba(0,0,0,0.5);
+        z-index: -1;
+        pointer-events: none; /* Let clicks pass through to close? No, visual only */
+      }
     }
 
 
