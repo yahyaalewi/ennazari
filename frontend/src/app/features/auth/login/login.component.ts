@@ -32,7 +32,10 @@ import { I18nService } from '../../../core/services/i18n.service';
             <label for="password">{{ 'LOGIN.PASSWORD' | translate }}</label>
             <div class="input-wrapper">
               <span class="input-icon">🔒</span>
-              <input type="password" id="password" [(ngModel)]="password" name="password" placeholder="••••••••" required>
+              <input [type]="showPassword ? 'text' : 'password'" id="password" [(ngModel)]="password" name="password" placeholder="••••••••" required>
+              <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+                {{ showPassword ? '👁️' : '🙈' }}
+              </button>
             </div>
           </div>
           
@@ -117,11 +120,29 @@ import { I18nService } from '../../../core/services/i18n.service';
       opacity: 0.6;
     }
 
+    .password-toggle {
+      position: absolute;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.1rem;
+      cursor: pointer;
+      opacity: 0.6;
+      padding: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-toggle:hover {
+      opacity: 1;
+    }
+
     [dir="rtl"] .input-icon { left: auto; right: 1rem; }
+    [dir="rtl"] .password-toggle { right: auto; left: 1rem; }
 
     input {
       width: 100%;
-      padding: 0.85rem 1rem 0.85rem 3rem;
+      padding: 0.85rem 3rem 0.85rem 3rem; 
       border: 2px solid transparent;
       background: #f1f5f9;
       border-radius: 12px;
@@ -129,15 +150,13 @@ import { I18nService } from '../../../core/services/i18n.service';
       font-family: inherit;
       transition: var(--transition);
     }
-
-    [dir="rtl"] input { padding: 0.85rem 3rem 0.85rem 1rem; }
-
-    input:focus {
-      outline: none;
-      background: white;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    
+    /* Input padding adjustment when toggle visible */
+    input[type="password"], input[type="text"] {
+       padding-right: 3rem;
     }
+
+    [dir="rtl"] input { padding: 0.85rem 3rem 0.85rem 3rem; }
     
     .btn-primary {
       width: 100%;
@@ -236,6 +255,7 @@ export class LoginComponent {
   password = '';
   loading = false;
   error = '';
+  showPassword = false;
 
   private i18nService = inject(I18nService);
   private translate = inject(TranslateService);
@@ -245,6 +265,10 @@ export class LoginComponent {
 
   setLang(lang: 'fr' | 'ar') {
     this.i18nService.setLanguage(lang);
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
   onSubmit() {
