@@ -97,7 +97,7 @@ import { FormsModule } from '@angular/forms'; // Add import
           <div class="class-header">
             <h2 class="class-title">🎓 {{ classGroup.className }}</h2>
             <div class="action-badges">
-              <span class="badge-count">{{ classGroup.students.length }} {{ 'USERS.STUDENTS' | translate }}</span>
+              <!-- <span class="badge-count">{{ classGroup.students.length }} {{ 'USERS.STUDENTS' | translate }}</span> -->
             </div>
           </div>
 
