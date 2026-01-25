@@ -13,64 +13,79 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   imports: [CommonModule, FormsModule, TranslateModule],
   template: `
     <div class="profile-page">
-      <div class="page-header">
-        <div>
-          <h2>👤 {{ 'PROFILE.TITLE' | translate }}</h2>
-          <p class="subtitle">{{ 'PROFILE.SUBTITLE' | translate }}</p>
-        </div>
-      </div>
-
-      <div class="profile-container">
-        <div class="profile-card shadow-lg">
-          <div class="profile-header">
-            <div class="avatar-wrapper">
-              <img *ngIf="!imageLoadError" [src]="getProfilePicture()" (error)="handleImageError()" alt="Profile" class="profile-avatar shadow-md">
-              <div *ngIf="imageLoadError" class="profile-avatar shadow-md fallback">
-                {{ user()?.firstName?.charAt(0) }}
+      <div class="profile-wrapper">
+        <!-- Main Card -->
+        <div class="profile-card">
+          <!-- Decorative Banner -->
+          <div class="card-banner"></div>
+          
+          <div class="card-content">
+            <!-- Header Section with Avatar -->
+            <div class="profile-header">
+              <div class="avatar-container">
+                <div class="avatar-frame">
+                  <img *ngIf="!imageLoadError" [src]="getProfilePicture()" (error)="handleImageError()" alt="Profile" class="profile-avatar">
+                  <div *ngIf="imageLoadError" class="profile-avatar fallback">
+                    {{ user()?.firstName?.charAt(0) }}
+                  </div>
+                  
+                  <label for="avatar-input" class="edit-btn" title="{{ 'PROFILE.UPDATE_PHOTO' | translate }}">
+                    <span class="icon">📷</span>
+                    <input type="file" id="avatar-input" (change)="onFileSelected($event)" accept="image/*" hidden>
+                  </label>
+                </div>
               </div>
-              <label for="avatar-input" class="edit-overlay shadow-sm">
-                <span class="icon">📷</span>
-                <input type="file" id="avatar-input" (change)="onFileSelected($event)" accept="image/*" hidden>
-              </label>
-            </div>
-            
-            <div class="user-info">
-              <h3>{{ user()?.firstName }} {{ user()?.lastName }}</h3>
-              <span class="role-badge" [ngClass]="user()?.role">{{ ('USERS.' + user()?.role?.toUpperCase()) | translate }}</span>
-              <p class="email">{{ user()?.email }}</p>
-            </div>
-          </div>
 
-          <div class="profile-body">
-            <div class="upload-status" *ngIf="uploading">
-              <div class="spinner"></div>
-              <span>{{ 'PROFILE.UPLOAD_IN_PROGRESS' | translate }}</span>
-            </div>
-
-            <div class="error-message" *ngIf="errorMessage">
-              ⚠️ {{ errorMessage }}
-            </div>
-
-            <div class="success-message" *ngIf="successMessage">
-              ✅ {{ 'PROFILE.UPLOAD_SUCCESS' | translate }}
-            </div>
-
-            <div class="info-grid">
-              <div class="info-item">
-                <label>{{ 'PROFILE.FULL_NAME' | translate }}</label>
-                <div class="value">{{ user()?.firstName }} {{ user()?.lastName }}</div>
+              <div class="identity-section">
+                <h2 class="user-name">{{ user()?.firstName }} {{ user()?.lastName }}</h2>
+                <span class="role-badge" [ngClass]="user()?.role">
+                  {{ ('USERS.' + user()?.role?.toUpperCase()) | translate }}
+                </span>
               </div>
-              <div class="info-item">
-                <label>{{ 'PROFILE.EMAIL' | translate }}</label>
-                <div class="value">{{ user()?.email }}</div>
+            </div>
+
+            <!-- Body Section -->
+            <div class="profile-body">
+              <div class="upload-status" *ngIf="uploading">
+                <div class="spinner"></div>
+                <span>{{ 'PROFILE.UPLOAD_IN_PROGRESS' | translate }}</span>
               </div>
-              <div class="info-item" *ngIf="user()?.role === 'student'">
-                <label>{{ 'PROFILE.CLASS' | translate }}</label>
-                <div class="value">{{ getClassName() }}</div>
-              </div>
-              <div class="info-item" *ngIf="user()?.role === 'professor'">
-                <label>{{ 'PROFILE.SUBJECTS' | translate }}</label>
-                <div class="value">{{ getSubjects() }}</div>
+
+              <div class="error-message" *ngIf="errorMessage">⚠️ {{ errorMessage }}</div>
+              <div class="success-message" *ngIf="successMessage">✅ {{ 'PROFILE.UPLOAD_SUCCESS' | translate }}</div>
+
+              <div class="info-grid">
+                <div class="info-card">
+                  <div class="info-icon">📧</div>
+                  <div class="info-content">
+                    <label>{{ 'PROFILE.EMAIL' | translate }}</label>
+                    <div class="value">{{ user()?.email }}</div>
+                  </div>
+                </div>
+
+                <div class="info-card">
+                  <div class="info-icon">👤</div>
+                  <div class="info-content">
+                    <label>{{ 'PROFILE.FULL_NAME' | translate }}</label>
+                    <div class="value">{{ user()?.firstName }} {{ user()?.lastName }}</div>
+                  </div>
+                </div>
+
+                <div class="info-card" *ngIf="user()?.role === 'student'">
+                  <div class="info-icon">🎓</div>
+                  <div class="info-content">
+                    <label>{{ 'PROFILE.CLASS' | translate }}</label>
+                    <div class="value highlight">{{ getClassName() }}</div>
+                  </div>
+                </div>
+
+                <div class="info-card full-width" *ngIf="user()?.role === 'professor'">
+                  <div class="info-icon">📚</div>
+                  <div class="info-content">
+                    <label>{{ 'PROFILE.SUBJECTS' | translate }}</label>
+                    <div class="value">{{ getSubjects() }}</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -80,220 +95,235 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   `,
   styles: [`
     .profile-page {
+      min-height: 100%;
       padding: 2rem;
-      animation: fadeIn 0.4s ease-out;
+      display: flex;
+      justify-content: center;
+      animation: fadeIn 0.5s ease-out;
     }
 
-    [dir="rtl"] .profile-header { flex-direction: row-reverse; text-align: right; }
-    [dir="rtl"] .user-info { text-align: right; }
-    [dir="rtl"] .edit-overlay { right: auto; left: 5px; }
-    [dir="rtl"] .info-item label { text-align: right; }
-    [dir="rtl"] .info-item .value { text-align: right; }
-
-    .page-header {
-      margin-bottom: 2rem;
-    }
-
-    h2 {
-      font-size: 2.25rem;
-      color: var(--text-main);
-      margin-bottom: 0.5rem;
-      font-weight: 800;
-    }
-
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 1.1rem;
-    }
-
-    .profile-container {
+    .profile-wrapper {
+      width: 100%;
       max-width: 800px;
-      margin: 0 auto;
     }
 
     .profile-card {
       background: white;
       border-radius: 24px;
       overflow: hidden;
-      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+      position: relative;
+    }
+
+    .card-banner {
+      height: 160px;
+      background: linear-gradient(120deg, var(--primary), #818cf8, #c084fc);
+      position: relative;
+    }
+
+    /* RTL Support */
+    [dir="rtl"] .info-content { text-align: right; }
+    [dir="rtl"] .edit-btn { right: auto; left: 0; }
+    [dir="rtl"] .info-icon { margin-right: 0; margin-left: 1rem; }
+
+    .card-content {
+      position: relative;
+      padding: 0 2rem 3rem;
     }
 
     .profile-header {
-      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-      padding: 3rem 2rem;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 2rem;
-      color: white;
+      margin-top: -80px; /* Overlap banner */
+      margin-bottom: 3rem;
     }
 
-    .avatar-wrapper {
+    .avatar-container {
       position: relative;
-      width: 150px;
-      height: 150px;
-      flex-shrink: 0;
+      margin-bottom: 1.5rem;
+    }
+
+    .avatar-frame {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      border: 6px solid white;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      position: relative;
+      background: white;
     }
 
     .profile-avatar {
-      width: 150px;
-      height: 150px;
+      width: 100%;
+      height: 100%;
       border-radius: 50%;
       object-fit: cover;
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      background: #f1f5f9;
-      display: block;
     }
-    
+
     .profile-avatar.fallback {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 3rem;
-      font-weight: bold;
-      color: #cbd5e1;
+      font-size: 4rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: #f1f5f9;
     }
 
-    .edit-overlay {
+    .edit-btn {
       position: absolute;
-      bottom: 0;
-      right: -10px;
-      /* background: white; Removed to match user request better if they want it next to it, but typically a white circle button next to it looks best. Keeping white bg for visibility but moving position. */
-      background: white;
-      color: var(--primary);
-      width: 40px;
-      height: 40px;
+      bottom: 5px;
+      right: 5px;
+      width: 42px;
+      height: 42px;
+      background: var(--primary);
+      color: white;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Add shadow for better visibility against any bg */
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+      border: 3px solid white;
+      transition: all 0.2s ease;
     }
 
-    .edit-overlay:hover {
+    .edit-btn:hover {
       transform: scale(1.1);
-      background: #f8fafc;
+      background: var(--primary-dark);
     }
 
-    .user-info h3 {
+    .identity-section {
+      text-align: center;
+    }
+
+    .user-name {
       font-size: 2rem;
-      margin: 0 0 0.5rem 0;
-      font-weight: 700;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.5px;
     }
 
     .role-badge {
       display: inline-block;
-      padding: 0.35rem 1rem;
-      border-radius: 20px;
+      padding: 0.5rem 1.25rem;
+      border-radius: 50px;
       font-size: 0.85rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(4px);
-      margin-bottom: 0.75rem;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
 
-    .email {
-      opacity: 0.9;
-      font-size: 1.1rem;
-      margin: 0;
-    }
+    .student { background: #eff6ff; color: #3b82f6; border: 1px solid #dbeafe; }
+    .professor { background: #fff7ed; color: #f97316; border: 1px solid #ffedd5; }
+    .manager { background: #fbfbfe; color: #8b5cf6; border: 1px solid #e9d5ff; }
 
     .profile-body {
-      padding: 2.5rem;
+      max-width: 700px;
+      margin: 0 auto;
     }
 
     .info-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
     }
 
-    .info-item label {
+    .info-card {
+      background: #f8fafc;
+      padding: 1.5rem;
+      border-radius: 16px;
+      display: flex;
+      align-items: flex-start;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .info-card:hover {
+      background: white;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+      border-color: #e2e8f0;
+    }
+
+    .info-card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .info-icon {
+      width: 48px;
+      height: 48px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      flex-shrink: 0;
+    }
+
+    .info-content {
+      flex: 1;
+    }
+
+    .info-content label {
       display: block;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 0.5rem;
-      font-weight: 600;
+      font-size: 0.75rem;
+      font-weight: 700;
       text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
       letter-spacing: 0.5px;
     }
 
-    .info-item .value {
+    .info-content .value {
       font-size: 1.1rem;
+      font-weight: 600;
       color: var(--text-main);
-      font-weight: 500;
-      padding: 0.75rem 1rem;
-      background: #f8fafc;
-      border-radius: 12px;
-      border: 1px solid #f1f5f9;
+      word-break: break-word;
     }
 
-    .upload-status {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+    .value.highlight {
+      color: var(--primary);
+    }
+
+    .upload-status, .error-message, .success-message {
       padding: 1rem;
-      background: #f8fafc;
       border-radius: 12px;
       margin-bottom: 1.5rem;
-      color: var(--primary);
       font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
+
+    .upload-status { background: #f0f9ff; color: #0284c7; }
+    .error-message { background: #fef2f2; color: #dc2626; }
+    .success-message { background: #f0fdf4; color: #16a34a; }
 
     .spinner {
       width: 20px;
       height: 20px;
-      border: 3px solid #e2e8f0;
-      border-top-color: var(--primary);
+      border: 2px solid currentColor;
+      border-bottom-color: transparent;
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      animation: spin 1s linear infinite;
     }
 
-    .error-message {
-      padding: 1rem;
-      background: #fef2f2;
-      border-radius: 12px;
-      color: #991b1b;
-      margin-bottom: 1.5rem;
-      font-weight: 500;
-      border-left: 4px solid #ef4444;
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .success-message {
-      padding: 1rem;
-      background: #eff6ff;
-      border-radius: 12px;
-      color: #1e40af;
-      margin-bottom: 1.5rem;
-      font-weight: 500;
-      border-left: 4px solid #3b82f6;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    @media (max-width: 768px) {
+    @media (max-width: 640px) {
       .profile-page { padding: 1rem; }
-      .profile-header {
-        flex-direction: column;
-        padding: 2rem 1.5rem;
-        text-align: center;
-        gap: 1.5rem;
-      }
-      .avatar-wrapper { width: 120px; height: 120px; }
-      .user-info h3 { font-size: 1.5rem; }
-      .profile-body { padding: 1.5rem; }
-      .info-grid { grid-template-columns: 1fr; gap: 1rem; }
-      h2 { font-size: 1.75rem; }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      .card-content { padding: 0 1.5rem 2rem; }
+      .avatar-frame { width: 130px; height: 130px; }
+      .profile-header { margin-top: -65px; }
+      .info-grid { grid-template-columns: 1fr; }
     }
   `]
 })
