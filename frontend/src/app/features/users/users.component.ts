@@ -131,7 +131,7 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
             </div>
             <div class="user-details">
               <span class="detail-item">
-                <span class="icon">📚</span> {{ 'USERS.SUBJECTS' | translate }}: {{ user.subjects?.length || 0 }}
+                <span class="icon">📚</span> {{ 'USERS.SUBJECTS' | translate }}: {{ getSubjectNames(user) }}
               </span>
             </div>
             <div class="user-actions">
@@ -1022,5 +1022,21 @@ export class UsersComponent implements OnInit {
     if (path.startsWith('http')) return path;
     const baseUrl = ApiConstants.baseUrl.replace('/api', '');
     return `${baseUrl}${path}`;
+  }
+
+  getSubjectNames(user: User): string {
+    if (!user.subjects || user.subjects.length === 0) return 'Aucune';
+
+    return user.subjects.map(subj => {
+      if (typeof subj === 'string') {
+        const found = this.subjects.find(s => s._id === subj);
+        return found ? found.name : '';
+      } else if (typeof subj === 'object' && subj) {
+        return (subj as any).name || '';
+      }
+      return '';
+    })
+      .filter(name => !!name)
+      .join(', ');
   }
 }
