@@ -19,9 +19,19 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
           <h2>👥 {{ 'USERS.TITLE' | translate }}</h2>
           <p class="subtitle">{{ 'USERS.SUBTITLE' | translate }}</p>
         </div>
-        <button class="btn-add" (click)="showCreateForm = true">
-          <span class="icon">➕</span> {{ 'USERS.ADD_USER' | translate }}
-        </button>
+        <div class="header-actions">
+          <!-- Search Bar -->
+          <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" [placeholder]="'COMMON.SEARCH' | translate" 
+                   [(ngModel)]="searchQuery" (input)="filterUsers()"
+                   class="search-input">
+          </div>
+          
+          <button class="btn-add" (click)="showCreateForm = true">
+            <span class="icon">➕</span> {{ 'USERS.ADD_USER' | translate }}
+          </button>
+        </div>
       </div>
 
       <!-- Create/Edit Form Modal -->
@@ -180,6 +190,63 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
       justify-content: space-between;
       align-items: center;
       margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .search-bar {
+      position: relative;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      padding-left: 0.75rem;
+      opacity: 0.5;
+    }
+
+    /* RTL */
+    [dir="rtl"] .search-icon {
+      padding-left: 0;
+      padding-right: 0.75rem;
+    }
+
+    .search-input {
+      border: none;
+      background: transparent;
+      padding: 0.75rem;
+      width: 200px;
+      outline: none;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+    
+    .search-input:focus {
+      width: 250px; /* Expand on focus */
+    }
+
+    /* Mobile Responsive Search */
+    @media (max-width: 600px) {
+      .header-actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-bar, .search-input {
+        width: 100%;
+      }
+      .btn-add {
+        justify-content: center;
+      }
     }
 
     h2 {
@@ -600,6 +667,7 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
 })
 export class UsersComponent implements OnInit {
   users: User[] = [];
+  allUsers: User[] = []; // Backup for filtering
   professors: User[] = [];
   groupedStudents: { className: string, users: User[] }[] = [];
   classes: Class[] = [];
@@ -608,6 +676,7 @@ export class UsersComponent implements OnInit {
   showCreateForm = false;
   editingUser: User | null = null;
   errorMessage = '';
+  searchQuery = '';
 
   formData = {
     firstName: '',
@@ -635,8 +704,8 @@ export class UsersComponent implements OnInit {
     this.http.get<User[]>(ApiConstants.baseUrl + ApiConstants.users)
       .subscribe({
         next: (data) => {
-          this.users = data.filter(u => u.role !== 'manager');
-          this.groupUsers();
+          this.allUsers = data.filter(u => u.role !== 'manager');
+          this.filterUsers(); // Initial group
           this.loading = false;
         },
         error: (err) => {
@@ -644,6 +713,28 @@ export class UsersComponent implements OnInit {
           this.loading = false;
         }
       });
+  }
+
+  filterUsers() {
+    const query = this.searchQuery.toLowerCase().trim();
+
+    if (!query) {
+      this.users = [...this.allUsers];
+    } else {
+      this.users = this.allUsers.filter(user => {
+        const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+        const role = user.role.toLowerCase();
+
+        let className = '';
+        if (user.role === 'student' && user.classId && typeof user.classId === 'object') {
+          className = (user.classId as Class).name.toLowerCase();
+        }
+
+        return fullName.includes(query) || role.includes(query) || className.includes(query);
+      });
+    }
+
+    this.groupUsers();
   }
 
   loadClasses() {
