@@ -24,10 +24,10 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
           <button *ngIf="user?.role !== 'student'" class="btn-add" (click)="navigateToAddGrade()">
             <span class="icon">➕</span> {{ 'GRADES.ADD_GRADE' | translate }}
           </button>
-          <div class="stats-summary" *ngIf="grades.length > 0">
-            <div class="stat-card">
-              <span class="stat-value">{{ calculateAverage() }}</span>
-              <span class="stat-label">{{ 'GRADES.AVERAGE' | translate }}</span>
+          <div class="stats-summary" *ngIf="grades.length > 0 && user?.role === 'student'">
+            <div class="stat-card" *ngFor="let term of ['T1', 'T2', 'T3']">
+              <span class="stat-value">{{ calculateAverage(term) }}</span>
+              <span class="stat-label">{{ 'GRADES.AVERAGE' | translate }} {{ term }}</span>
             </div>
           </div>
         </div>
@@ -638,10 +638,32 @@ export class GradesComponent implements OnInit {
       });
   }
 
-  calculateAverage(): string {
-    if (this.grades.length === 0) return '0.0';
-    const sum = this.grades.reduce((acc, g) => acc + g.value, 0);
-    return (sum / this.grades.length).toFixed(1);
+  calculateAverage(term: string = ''): string {
+    let filteredGrades = this.grades;
+
+    // Filter by term if provided (T1, T2, T3)
+    if (term) {
+      filteredGrades = this.grades.filter(g => {
+        // Check if eval type contains the term marker (e.g. "DEVOIR_T1", "EXAMEN_T1")
+        // We use the translated key logic or check the raw string if needed, 
+        // but typically the raw value stored is like "Devoir du 1er trimestre"
+        const type = g.evaluationType || '';
+        if (term === 'T1') return type.includes('1er') || type.includes('T1');
+        if (term === 'T2') return type.includes('2ème') || type.includes('T2');
+        if (term === 'T3') return type.includes('3ème') || type.includes('T3');
+        return false;
+      });
+    }
+
+    if (filteredGrades.length === 0) return '-';
+
+    // Calculate weighted average
+    const totalScore = filteredGrades.reduce((acc, g) => acc + (g.value * g.coefficient), 0);
+    const totalCoef = filteredGrades.reduce((acc, g) => acc + g.coefficient, 0);
+
+    if (totalCoef === 0) return '0.0';
+
+    return (totalScore / totalCoef).toFixed(1);
   }
 
   getGradeClass(value: number): string {
