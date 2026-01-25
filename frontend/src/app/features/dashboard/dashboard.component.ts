@@ -820,33 +820,24 @@ import { TranslateModule } from '@ngx-translate/core';
         display: flex;
       }
 
-      /* Mobile Notifications: Center Modal Style */
+      /* Mobile Notifications: Center Below Header */
       .notifications-dropdown {
         position: fixed;
-        top: 50%;
+        top: 65px; /* Just below the 60px header + 5px margin */
         left: 50%;
-        transform: translate(-50%, -50%); /* Perfectly centered */
-        width: 90%;
-        max-width: 350px;
-        max-height: 80vh;
+        transform: translateX(-50%); /* Center horizontally */
+        width: 95%; /* Almost full width */
+        max-width: 400px;
+        max-height: 70vh;
         z-index: 2000;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        border: 1px solid rgba(0,0,0,0.1);
-        animation: fadeIn 0.3s ease-out;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0,0,0,0.05);
+        animation: slideDown 0.3s ease-out;
+        border-radius: var(--radius-lg);
       }
 
-      /* Add backdrop specifically for mobile notifications if possible, 
-         but since we can't easily add a div, box-shadow hack or relying on click-outside */
       .notifications-dropdown::before {
-        content: '';
-        position: fixed;
-        top: -100vh;
-        left: -100vw;
-        right: -100vw;
-        bottom: -100vh;
-        background: rgba(0,0,0,0.5);
-        z-index: -1;
-        pointer-events: none; /* Let clicks pass through to close? No, visual only */
+        display: none; /* Remove backdrop as requested */
       }
     }
 
