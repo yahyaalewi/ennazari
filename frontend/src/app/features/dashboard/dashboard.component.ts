@@ -822,24 +822,33 @@ import { TranslateModule } from '@ngx-translate/core';
         display: flex;
       }
 
-      /* Mobile Notifications: Center Below Header */
+      /* Mobile Notifications: Aligned under icon */
+      /* Note: The parent .notifications-container needs position: relative (already set globally) */
       .notifications-dropdown {
-        position: fixed;
-        top: 65px; /* Just below the 60px header + 5px margin */
-        left: 50%;
-        transform: translateX(-50%); /* Center horizontally */
-        width: 95%; /* Almost full width */
-        max-width: 400px;
+        position: absolute; /* Revert to absolute relative to parent container */
+        top: 100%; /* Directly below icon */
+        margin-top: 10px;
+        right: -10px; /* Align to right edge for LTR */
+        left: auto;
+        transform: none; /* No centering transform needed */
+        width: 300px; /* Fixed width reasonable for mobile */
+        max-width: 90vw; /* Safety cap */
         max-height: 70vh;
         z-index: 2000;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
         border: 1px solid rgba(0,0,0,0.05);
         animation: slideDown 0.3s ease-out;
         border-radius: var(--radius-lg);
       }
+      
+      /* RTL Specific Adjustment for Mobile */
+      [dir="rtl"] .notifications-dropdown {
+        right: auto;
+        left: -10px; /* Align to left edge for RTL */
+      }
 
       .notifications-dropdown::before {
-        display: none; /* Remove backdrop as requested */
+        display: none; 
       }
     }
 
