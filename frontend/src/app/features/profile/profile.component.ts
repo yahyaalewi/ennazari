@@ -155,8 +155,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
     .edit-overlay {
       position: absolute;
-      bottom: 5px;
-      right: 5px;
+      bottom: 0;
+      right: -10px;
+      /* background: white; Removed to match user request better if they want it next to it, but typically a white circle button next to it looks best. Keeping white bg for visibility but moving position. */
       background: white;
       color: var(--primary);
       width: 40px;
@@ -166,6 +167,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Add shadow for better visibility against any bg */
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
