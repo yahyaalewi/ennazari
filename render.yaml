@@ -1,0 +1,23 @@
+services:
+  # Service Backend
+  - type: web
+    name: nizari-backend
+    env: docker
+    dockerContext: backend
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: MONGO_URI
+        sync: false # À configurer dans le dashboard Render
+      - key: JWT_SECRET
+        sync: false # À configurer dans le dashboard Render
+      - key: PORT
+        value: 5000
+
+  # Service Frontend (Optionnel sur Render, peut aller sur Vercel)
+  - type: web
+    name: nizari-frontend
+    env: docker
+    dockerContext: frontend
+    plan: free
+    autoDeploy: true

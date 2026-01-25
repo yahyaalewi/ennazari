@@ -6,6 +6,7 @@ import { ConfirmationService } from './core/services/confirmation.service';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [RouterOutlet, ToastContainerComponent, ConfirmModalComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'

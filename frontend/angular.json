@@ -74,6 +74,27 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "docker": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.docker.ts"
+                }
+              ],
+              "outputHashing": "all",
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "100MB",
+                  "maximumError": "200MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "100MB",
+                  "maximumError": "200MB"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"

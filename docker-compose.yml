@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Service Frontend (Application Angular)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:80"
+    restart: always
+
+  # Service Backend (API Node.js)
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      # Utilisez l'URI interne docker pour mongo, ou commentez pour utiliser votre URI Atlas du .env
+      - MONGO_URI=mongodb://mongo:27017/nizari
+      - JWT_SECRET=votre_super_secret_jwt
+      - ADMIN_PASSWORD=R27076535R
+    depends_on:
+      - mongo
+    volumes:
+      # Persistance des uploads (documents, photos)
+      - backend-uploads:/app/uploads
+    restart: always
+
+  # Service Base de données (MongoDB local)
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    restart: always
+
+volumes:
+  mongo-data:
+  backend-uploads:

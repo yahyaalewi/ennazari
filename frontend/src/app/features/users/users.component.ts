@@ -769,7 +769,7 @@ export class UsersComponent implements OnInit {
                   });
                   this.loadUsers();
                 },
-                error: (err) => {
+                error: (err: any) => {
                   this.toastService.error(err.error?.message || 'Erreur lors de la suppression');
                   console.error(err);
                 }
@@ -805,7 +805,7 @@ export class UsersComponent implements OnInit {
 
   private getTranslation(key: string): string {
     let val = '';
-    this.translate.get(key).subscribe(v => val = v);
+    this.translate.get(key).subscribe((v: any) => val = v);
     return val;
   }
 

@@ -1,122 +1,46 @@
-# 🚀 Guide de Déploiement Complet - Projet Ennazari
+# 🚀 Guide de Déploiement Simplifié (Docker)
 
-Ce guide vous explique étape par étape comment mettre en ligne votre application **Ennazari** gratuitement en utilisant **GitHub**, **Render** (pour le Backend) et **Vercel** (pour le Frontend).
+Grâce à Docker, le déploiement est maintenant automatique pour le Frontend et le Backend.
 
----
+## 📋 Étape 1 : Mettre le code sur GitHub
 
-## 📋 Prérequis
+1.  Assurez-vous que tout est validé :
+    ```bash
+    git add .
+    git commit -m "Configuration Docker pour déploiement"
+    git push origin main
+    ```
 
-1.  Un compte [GitHub](https://github.com/).
-2.  Un compte [Render](https://render.com/) (Connectez-vous avec GitHub).
-3.  Un compte [Vercel](https://vercel.com/) (Connectez-vous avec GitHub).
-4.  Votre base de données MongoDB Atlas prête (vous avez déjà l'URL de connexion).
+## ☁️ Étape 2 : Déployer sur Render (Backend + Frontend)
 
----
+1.  Allez sur votre tableau de bord [Render](https://dashboard.render.com/).
+2.  Cliquez sur **Blueprints** (en haut).
+3.  Cliquez sur **New Blueprint Instance**.
+4.  Connectez votre dépôt GitHub `nizari` (ou le nom que vous lui avez donné).
+5.  Render va détecter automatiquement le fichier `render.yaml`.
+6.  Cliquez sur **Apply**.
 
-## 📦 Étape 1 : Préparation du Code pour la Production
+### ⚠️ Configuration des Variables (Important)
+Render va vous demander de remplir les variables manquantes (`sync: false`) :
 
-Avant de déployer, nous devons nous assurer que le Frontend peut se connecter au Backend une fois en ligne.
+*   **MONGO_URI** : Collez votre lien de connexion MongoDB Atlas (le même que dans votre ancien `.env`).
+*   **JWT_SECRET** : Mettez un mot de passe compliqué (ex: `super_secret_key_prod_123`).
 
-### 1.1 Modifier le fichier d'environnement Frontend
-Dans le fichier `frontend/src/environments/environment.ts` (ou créez-le s'il n'existe pas), ajoutez :
+7.  Validez le déploiement.
 
-```typescript
-export const environment = {
-  production: true,
-  apiUrl: 'https://votre-backend-sur-render.onrender.com/api' // On mettra la vraie URL plus tard
-};
-```
+## 🌍 C'est TOUT !
 
-### 1.2 Modifier `ApiConstants.ts`
-Dans `frontend/src/app/core/constants/api.constants.ts`, modifiez la ligne `baseUrl` pour utiliser l'environnement :
+Render va maintenant :
+1.  Construire le conteneur Backend.
+2.  Construire le conteneur Frontend.
+3.  Les mettre en ligne automatiquement.
 
-```typescript
-import { environment } from '../../../environments/environment';
-
-export const ApiConstants = {
-    baseUrl: environment.apiUrl, 
-    // ... le reste ne change pas
-};
-```
-*(Si vous ne voulez pas gérer les fichiers d'environnement maintenant, vous pourrez modifier ce fichier directement avec la nouvelle URL du backend une fois qu'il sera déployé).*
-
----
-
-## 🐙 Étape 2 : Mettre le code sur GitHub
-
-1.  Allez sur [GitHub](https://github.com/new) et créez un **nouveau repository** (nommez-le `ennazari-app` par exemple). Cochez "Public" ou "Private".
-2.  Sur votre ordinateur, ouvrez le terminal dans le dossier racine du projet `nizari`.
-3.  Exécutez ces commandes :
-
-```bash
-git init
-git add .
-git commit -m "Déploiement initial Ennazari"
-git branch -M main
-git remote add origin https://github.com/VOTRE_NOM_UTILISATEUR/ennazari-app.git
-git push -u origin main
-```
-*Remplacez `VOTRE_NOM_UTILISATEUR` et le nom du repo par les vôtres.*
+Vous aurez deux liens :
+*   `https://nizari-backend.onrender.com` (API)
+*   `https://nizari-frontend.onrender.com` (Site Web)
 
 ---
 
-## 🛠️ Étape 3 : Déployer le Backend (sur Render)
+## 💡 Note sur le Frontend
 
-Render va héberger votre serveur Node.js.
-
-1.  Allez sur le [Dashboard Render](https://dashboard.render.com/).
-2.  Cliquez sur **New +** et sélectionnez **Web Service**.
-3.  Connectez votre repo GitHub `ennazari-app`.
-4.  Configurez les paramètres suivants :
-    *   **Name** : `ennazari-backend`
-    *   **Root Directory** : `backend` (Très important, car votre backend est dans un sous-dossier).
-    *   **Environment** : `Node`
-    *   **Build Command** : `npm install`
-    *   **Start Command** : `node server.js`
-5.  Descendez vers la section **Environment Variables** et ajoutez :
-    *   `MONGO_URI` : *(Copiez votre lien de connexion MongoDB Atlas complet)*
-    *   `JWT_SECRET` : *(Inventez un mot de passe secret compliqué)*
-    *   `PORT` : `5000` (Render l'utilisera en interne)
-6.  Cliquez sur **Create Web Service**.
-
-⏳ **Attendez** que le déploiement se termine. Une fois fini, Render vous donnera une URL du type `https://ennazari-backend.onrender.com`.
-
-**⚠️ Important :** Copiez cette URL, vous en aurez besoin pour le Frontend !
-
----
-
-## 🌐 Étape 4 : Déployer le Frontend (sur Vercel)
-
-Vercel va héberger votre site Angular.
-
-1.  **Mettez à jour le Backend URL** :
-    *   Revenez sur votre code local.
-    *   Modifiez `frontend/src/app/core/constants/api.constants.ts`.
-    *   Remplacez `http://localhost:5000/api` par `https://votre-url-render.onrender.com/api`.
-    *   Faites un nouveau commit et push sur GitHub :
-        ```bash
-        git add .
-        git commit -m "Update API URL for production"
-        git push
-        ```
-
-2.  Allez sur le [Dashboard Vercel](https://vercel.com/dashboard).
-3.  Cliquez sur **Add New...** > **Project**.
-4.  Importez votre repo `ennazari-app`.
-5.  Configurez le projet :
-    *   **Root Directory** : Cliquez sur `Edit` et sélectionnez le dossier `frontend`.
-    *   **Framework Preset** : Vercel détectera normalement **Angular** automatiquement.
-6.  Cliquez sur **Deploy**.
-
----
-
-## 🎉 C'est fini !
-
-Une fois Vercel a terminé :
-1.  Il vous donnera un lien (domaine) pour votre site (ex: `ennazari-app.vercel.app`).
-2.  Ouvrez ce lien : Votre application est maintenant accessible par tout le monde !
-
-### Récapitulatif des URLs :
-*   **Frontend (le site)** : Sur Vercel.
-*   **Backend (l'API)** : Sur Render.
-*   **Base de données** : Sur MongoDB Atlas.
+Si votre Frontend sur Render est trop lent (car l'offre gratuite "s'endort" après 15min d'inactivité), vous pouvez toujours déployer le dossier `frontend` sur **Vercel** comme avant. Mais la méthode Docker sur Render est la plus simple car tout est configuré !
