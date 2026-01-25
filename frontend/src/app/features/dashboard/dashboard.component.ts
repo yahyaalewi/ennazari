@@ -764,10 +764,10 @@ import { TranslateModule } from '@ngx-translate/core';
       }
       /* Top Bar Fixes for Mobile */
       .top-header {
-        padding: 1rem 1.5rem;
+        padding: 0 1rem; /* Very small padding */
         background: white;
         box-shadow: var(--shadow-sm);
-        position: fixed; /* Force fixed */
+        position: fixed;
         top: 0;
         left: 0;
         right: 0;
@@ -776,30 +776,48 @@ import { TranslateModule } from '@ngx-translate/core';
         align-items: center;
         justify-content: space-between;
         gap: 0.5rem;
-        height: 70px; /* Explicit height */
+        height: 60px; /* Reduced height */
       }
-      .page-title { font-size: 1rem; margin: 0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       
-      /* Show date on mobile but make it smaller */
+      .menu-toggle {
+        margin-right: 0.5rem;
+        padding: 0.25rem;
+        font-size: 1.25rem; /* Smaller icon */
+      }
+      [dir="rtl"] .menu-toggle { margin-left: 0.5rem; margin-right: 0; }
+
+      .page-title { 
+        font-size: 0.95rem; /* much smaller */
+        font-weight: 700;
+        margin: 0; 
+        flex: 1; 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        line-height: 1.2;
+      }
+      
+      /* Optimize date display */
       .date-badge {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-        display: flex !important; /* Force show */
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+        background: #f1f5f9; /* softer bg */
+        display: flex !important;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 120px;
+        max-width: 100px;
+        min-width: 0; /* allows shrinking */
       }
-      /* Hide full text date on very small screens if needed */
-      @media (max-width: 360px) {
+      
+      @media (max-width: 340px) {
         .date-badge { display: none !important; }
       }
 
-      /* Add margins to content so it's not hidden behind fixed header */
       .content-scrollable { 
-        padding: 1.5rem; 
-        margin-top: 70px; /* Match header height */
-        height: calc(100vh - 70px);
+        padding: 1rem; 
+        margin-top: 60px;
+        height: calc(100vh - 60px);
         overflow-y: auto;
       }
 
