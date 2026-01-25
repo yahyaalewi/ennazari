@@ -787,14 +787,7 @@ import { TranslateModule } from '@ngx-translate/core';
       [dir="rtl"] .menu-toggle { margin-left: 0.5rem; margin-right: 0; }
 
       .page-title { 
-        font-size: 0.95rem; /* much smaller */
-        font-weight: 700;
-        margin: 0; 
-        flex: 1; 
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-        line-height: 1.2;
+        display: none; /* Hide title completely on mobile to save space */
       }
       
       /* Optimize date display */
