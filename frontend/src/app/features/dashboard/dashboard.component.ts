@@ -113,11 +113,11 @@ import { TranslateModule } from '@ngx-translate/core';
             <div class="modal-content" (click)="$event.stopPropagation()">
               <div class="modal-header">
                 <div class="modal-icon">{{ getNotificationIcon(selectedNotification.type) }}</div>
-                <h3>{{ selectedNotification.title }}</h3>
+                <h3>{{ getNotificationData(selectedNotification).titleKey | translate: getNotificationData(selectedNotification).titleParams }}</h3>
                 <button class="close-modal-btn" (click)="closeNotificationModal()">×</button>
               </div>
               <div class="modal-body">
-                <p class="notification-full-message">{{ selectedNotification.message }}</p>
+                <p class="notification-full-message">{{ getNotificationData(selectedNotification).msgKey | translate: getNotificationData(selectedNotification).msgParams }}</p>
                 <div class="notification-meta">
                   <span class="meta-item">
                     <strong>📅 Date:</strong> {{ selectedNotification.createdAt | date:'full' }}
