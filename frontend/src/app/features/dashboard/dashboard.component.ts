@@ -141,6 +141,9 @@ import { UiService } from '../../core/services/ui.service';
         <div class="content-scrollable">
           <router-outlet></router-outlet>
         </div>
+        <footer class="app-footer">
+          <p>Cette plateforme a été créée par <span class="author">Yahya El Mamy</span></p>
+        </footer>
       </main>
     </div>
 
@@ -813,8 +816,26 @@ import { UiService } from '../../core/services/ui.service';
       .content-scrollable { 
         padding: 1rem; 
         margin-top: 60px;
-        height: calc(100vh - 60px);
+        flex: 1;
         overflow-y: auto;
+        min-height: 0;
+      }
+
+      .app-footer {
+        padding: 1rem;
+        background: transparent;
+        text-align: center;
+        border-top: 1px solid rgba(0,0,0,0.05);
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+      .app-footer .author {
+        font-weight: 700;
+        color: var(--primary);
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
       }
 
       .brand { margin-bottom: 2rem; }
