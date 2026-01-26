@@ -142,7 +142,7 @@ import { UiService } from '../../core/services/ui.service';
           <router-outlet></router-outlet>
         </div>
         <footer class="app-footer">
-          <p>Cette plateforme a été créée par <span class="author">Yahya El Mamy</span></p>
+          <p>{{ 'FOOTER.CREATED_BY' | translate }} <span class="author">Yahya El Mamy</span></p>
         </footer>
       </main>
     </div>

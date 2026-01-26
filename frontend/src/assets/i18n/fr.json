@@ -221,6 +221,9 @@
         "GENERAL": "Général",
         "OPTIONAL": "Optionnel"
     },
+    "FOOTER": {
+        "CREATED_BY": "Cette plateforme a été créée par"
+    },
     "LOGIN": {
         "WELCOME": "Bienvenue",
         "SUBTITLE": "Connectez-vous à votre compte Ennazari",
