@@ -24,7 +24,8 @@ const seedData = async () => {
             { name: '4ème Année', academicYear: '2024-2025' },
             { name: '5ème Année', academicYear: '2024-2025' },
             { name: '6ème Année', academicYear: '2024-2025' },
-            { name: '7ème Année', academicYear: '2024-2025' }
+            { name: '7ème Année', academicYear: '2024-2025' },
+            { name: '7éme année O', academicYear: '2024-2025' }
         ]);
 
         console.log('📖 Creating Subjects...');
