@@ -827,14 +827,16 @@ import { UiService } from '../../core/services/ui.service';
         display: flex;
         justify-content: center;
         align-items: center;
+        flex-wrap: wrap;
+        gap: 0.3rem;
         border-top: 1px solid rgba(0,0,0,0.05);
         font-size: 0.9rem;
         color: var(--text-muted);
         flex-shrink: 0;
-        white-space: nowrap;
       }
       .app-footer .author {
         font-weight: 700;
+        white-space: nowrap;
         color: var(--primary);
         background: linear-gradient(135deg, var(--primary), var(--secondary));
         -webkit-background-clip: text;
