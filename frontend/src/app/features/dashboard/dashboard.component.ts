@@ -142,7 +142,7 @@ import { UiService } from '../../core/services/ui.service';
           <router-outlet></router-outlet>
         </div>
         <footer class="app-footer">
-          <p>{{ 'FOOTER.CREATED_BY' | translate }} <span class="author">Yahya El Mamy</span></p>
+          {{ 'FOOTER.CREATED_BY' | translate }}&nbsp;<span class="author">Yahya El Mamy</span>
         </footer>
       </main>
     </div>
@@ -824,11 +824,14 @@ import { UiService } from '../../core/services/ui.service';
       .app-footer {
         padding: 1rem;
         background: transparent;
-        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         border-top: 1px solid rgba(0,0,0,0.05);
         font-size: 0.9rem;
         color: var(--text-muted);
         flex-shrink: 0;
+        white-space: nowrap;
       }
       .app-footer .author {
         font-weight: 700;
