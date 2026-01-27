@@ -829,11 +829,12 @@ import { UiService } from '../../core/services/ui.service';
       }
 
       .app-footer {
-        background: transparent;
-        border-top: 1px solid rgba(0,0,0,0.05);
+        background: transparent !important;
+        border-top: none !important;
         color: var(--text-muted);
         flex-shrink: 0;
         padding: 1rem;
+        margin-top: auto;
       }
       
       .footer-simple {
