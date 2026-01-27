@@ -145,7 +145,7 @@ import { UiService } from '../../core/services/ui.service';
           <div class="footer-content hide-on-mobile">
             <div class="footer-section brand-section">
               <div class="footer-brand">
-                <img src="logo.jpg" alt="Logo" class="footer-logo">
+
                 <span>{{ 'SIDEBAR.APP_NAME' | translate }}</span>
               </div>
               <p class="footer-tagline">Votre plateforme de gestion scolaire tout-en-un.</p>
