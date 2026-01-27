@@ -222,7 +222,8 @@
         "OPTIONAL": "Optionnel"
     },
     "FOOTER": {
-        "CREATED_BY": "Cette plateforme a été développée par"
+        "CREATED_BY": "Cette plateforme a été développée par",
+        "ALL_RIGHTS_RESERVED": "Tous droits réservés."
     },
     "LOGIN": {
         "WELCOME": "Bienvenue",

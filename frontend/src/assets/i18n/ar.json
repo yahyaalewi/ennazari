@@ -223,7 +223,8 @@
         "OPTIONAL": "اختياري"
     },
     "FOOTER": {
-        "CREATED_BY": "تم إنشاء هذه المنصة بواسطة"
+        "CREATED_BY": "تم إنشاء هذه المنصة بواسطة",
+        "ALL_RIGHTS_RESERVED": "جميع الحقوق محفوظة."
     },
     "LOGIN": {
         "WELCOME": "مرحباً",

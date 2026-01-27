@@ -141,10 +141,10 @@ import { UiService } from '../../core/services/ui.service';
         <div class="content-scrollable">
           <router-outlet></router-outlet>
         </div>
-        <footer class="app-footer show-on-mobile">
+        <footer class="app-footer">
           <div class="footer-simple">
             <div class="copyright">
-              &copy; {{ today | date:'yyyy' }} {{ 'SIDEBAR.APP_NAME' | translate }}. Tous droits réservés.
+              &copy; {{ today | date:'yyyy' }} {{ 'SIDEBAR.APP_NAME' | translate }}. {{ 'FOOTER.ALL_RIGHTS_RESERVED' | translate }}
             </div>
             <div class="credits">
               Cette plateforme a été développée par <span class="author">Yahya El Mamy</span>
