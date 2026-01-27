@@ -67,7 +67,7 @@ const uploadCourse = async (req, res) => {
         const course = await Course.create({
             title,
             description,
-            fileUrl: `/${req.file.path.replace(/\\/g, '/')}`, // Normalize path
+            fileUrl: `/uploads/${req.file.filename}`, // Web-accessible relative path
             subject: subjectId,
             class: classId,
             professor: professorId,

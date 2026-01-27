@@ -144,7 +144,7 @@ const submitJustification = async (req, res) => {
 
         // If a file was uploaded, save its path
         if (req.file) {
-            absence.justificationDocument = `/${req.file.path.replace(/\\/g, '/')}`;
+            absence.justificationDocument = `/uploads/justifications/${req.file.filename}`;
         }
 
         await absence.save();

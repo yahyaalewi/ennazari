@@ -159,7 +159,7 @@ const updateProfilePicture = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        user.profilePicture = `/${req.file.path.replace(/\\/g, '/')}`;
+        user.profilePicture = `/uploads/profiles/${req.file.filename}`;
         await user.save();
 
         res.json({

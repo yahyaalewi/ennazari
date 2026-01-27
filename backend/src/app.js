@@ -22,6 +22,14 @@ app.use((req, res, next) => {
     next();
 });
 
+// Fix for old file paths saved with absolute Docker path (backward compatibility)
+app.use((req, res, next) => {
+    if (req.url.includes('/app/uploads')) {
+        req.url = req.url.replace(/^.*\/app\/uploads/, '/uploads');
+    }
+    next();
+});
+
 // Serve static uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
