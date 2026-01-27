@@ -19,7 +19,7 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
       <div class="page-header">
         <div>
           <h2>🕒 {{ 'ABSENCES.TITLE' | translate }}</h2>
-          <p class="subtitle">{{ 'ABSENCES.SUBTITLE' | translate }}</p>
+          <p class="subtitle" *ngIf="user?.role === 'student'">{{ 'ABSENCES.SUBTITLE' | translate }}</p>
         </div>
         <div class="header-actions">
           <button *ngIf="user?.role !== 'student'" class="btn-add" (click)="navigateToMarkAbsence()">
