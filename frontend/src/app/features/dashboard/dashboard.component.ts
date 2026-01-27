@@ -161,7 +161,7 @@ import { UiService } from '../../core/services/ui.service';
             <div class="footer-section contact-section">
               <h4>Contact & Support</h4>
               <div class="contact-item">
-                <span>📧</span> <a href="mailto:support@ennazari.com">support@ennazari.com</a>
+                <span>📧</span> <a href="mailto:support&#64;ennazari.com">support&#64;ennazari.com</a>
               </div>
               <div class="contact-item">
                 <span>📞</span> <span>+212 6 00 00 00 00</span>
