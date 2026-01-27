@@ -141,7 +141,7 @@ import { UiService } from '../../core/services/ui.service';
         <div class="content-scrollable">
           <router-outlet></router-outlet>
         </div>
-        <footer class="app-footer">
+        <footer class="app-footer show-on-mobile">
           <div class="footer-simple">
             <div class="copyright">
               &copy; {{ today | date:'yyyy' }} {{ 'SIDEBAR.APP_NAME' | translate }}. {{ 'FOOTER.ALL_RIGHTS_RESERVED' | translate }}
