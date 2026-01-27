@@ -839,7 +839,7 @@ import { UiService } from '../../core/services/ui.service';
       
       .footer-simple {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
