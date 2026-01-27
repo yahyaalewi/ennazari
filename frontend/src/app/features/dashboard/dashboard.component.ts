@@ -852,10 +852,6 @@ import { UiService } from '../../core/services/ui.service';
         .app-footer {
           padding-bottom: 80px; /* Space for mobile nav */
         }
-        .footer-simple {
-          flex-direction: column;
-          gap: 0.2rem;
-        }
       }
 
       .app-footer .author {
