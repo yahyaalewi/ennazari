@@ -892,9 +892,12 @@ import { UiService } from '../../core/services/ui.service';
       }
 
       .footer-logo {
-        width: 32px;
-        height: 32px;
+        width: 40px;
+        height: 40px;
+        min-width: 40px; /* Force size */
         border-radius: 50%;
+        object-fit: cover; /* meaningful for aspect ratio */
+        border: 1px solid rgba(0,0,0,0.1);
       }
 
       .footer-tagline {
