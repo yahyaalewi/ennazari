@@ -142,7 +142,41 @@ import { UiService } from '../../core/services/ui.service';
           <router-outlet></router-outlet>
         </div>
         <footer class="app-footer">
-          {{ 'FOOTER.CREATED_BY' | translate }}&nbsp;<span class="author">Yahya El Mamy</span>
+          <div class="footer-content hide-on-mobile">
+            <div class="footer-section brand-section">
+              <div class="footer-brand">
+                <img src="logo.jpg" alt="Logo" class="footer-logo">
+                <span>{{ 'SIDEBAR.APP_NAME' | translate }}</span>
+              </div>
+              <p class="footer-tagline">Votre plateforme de gestion scolaire tout-en-un.</p>
+            </div>
+            
+            <div class="footer-section links-section">
+              <h4>Navigation</h4>
+              <a (click)="navigate('/dashboard/courses')">📚 {{ ('SIDEBAR.COURSES' | translate) || 'Cours' }}</a>
+              <a (click)="navigate('/dashboard/grades')">📈 {{ ('SIDEBAR.GRADES' | translate) || 'Notes' }}</a>
+              <a (click)="navigate('/dashboard/absences')">🕒 {{ ('SIDEBAR.ABSENCES' | translate) || 'Absences' }}</a>
+            </div>
+
+            <div class="footer-section contact-section">
+              <h4>Contact & Support</h4>
+              <div class="contact-item">
+                <span>📧</span> <a href="mailto:support@ennazari.com">support@ennazari.com</a>
+              </div>
+              <div class="contact-item">
+                <span>📞</span> <span>+212 6 00 00 00 00</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="footer-bottom">
+            <div class="copyright">
+              &copy; {{ today | date:'yyyy' }} {{ 'SIDEBAR.APP_NAME' | translate }}. Tous droits réservés.
+            </div>
+            <div class="credits">
+              {{ 'FOOTER.CREATED_BY' | translate }}&nbsp;<span class="author">Yahya El Mamy</span>
+            </div>
+          </div>
         </footer>
       </main>
     </div>
@@ -822,17 +856,106 @@ import { UiService } from '../../core/services/ui.service';
       }
 
       .app-footer {
-        padding: 1rem;
-        background: transparent;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 0.3rem;
+        background: white;
         border-top: 1px solid rgba(0,0,0,0.05);
-        font-size: 0.9rem;
         color: var(--text-muted);
         flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .footer-content {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr;
+        gap: 2rem;
+        padding: 2rem 3rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .footer-section h4 {
+        color: var(--text-main);
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .footer-logo {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+      }
+
+      .footer-tagline {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        max-width: 300px;
+      }
+
+      .links-section a {
+        display: block;
+        padding: 0.3rem 0;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: var(--transition);
+        cursor: pointer;
+        width: fit-content;
+      }
+
+      .links-section a:hover {
+        color: var(--primary);
+        transform: translateX(5px);
+      }
+
+      .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+      }
+      
+      .contact-item a { color: inherit; text-decoration: none; }
+      .contact-item a:hover { color: var(--primary); text-decoration: underline; }
+
+      .footer-bottom {
+        border-top: 1px solid rgba(0,0,0,0.05);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8fafc;
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 768px) {
+        .app-footer {
+          padding-bottom: 80px; /* Space for mobile nav if exists, or just extra padding */
+        }
+        .footer-content {
+          grid-template-columns: 1fr;
+          padding: 1.5rem;
+          text-align: center;
+          gap: 1.5rem;
+        }
+        .footer-brand, .contact-item { justify-content: center; }
+        .links-section a { margin: 0 auto; }
+        .footer-bottom {
+          flex-direction: column;
+          gap: 0.5rem;
+          text-align: center;
+        }
       }
       .app-footer .author {
         font-weight: 700;
