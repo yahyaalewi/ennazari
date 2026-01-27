@@ -829,35 +829,31 @@ import { UiService } from '../../core/services/ui.service';
       }
 
       .app-footer {
-        background: white;
+        background: transparent;
         border-top: 1px solid rgba(0,0,0,0.05);
         color: var(--text-muted);
         flex-shrink: 0;
-        padding: 1.5rem 2rem;
+        padding: 1rem;
       }
       
       .footer-simple {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
         align-items: center;
         gap: 0.5rem;
         text-align: center;
         font-size: 0.9rem;
       }
 
-      .copyright {
-        font-weight: 500;
-        color: var(--text-main);
-      }
-
-      .credits {
-        font-size: 0.85rem;
-        opacity: 0.8;
-      }
-
       @media (max-width: 768px) {
         .app-footer {
           padding-bottom: 80px; /* Space for mobile nav */
+        }
+        .footer-simple {
+          flex-direction: column;
+          gap: 0.2rem;
         }
       }
 
