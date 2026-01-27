@@ -6,7 +6,7 @@ const fs = require('fs');
 // Multer Config for Justification Documents
 const storage = multer.diskStorage({
     destination(req, file, cb) {
-        const dir = 'uploads/justifications/';
+        const dir = path.join(__dirname, '../../uploads/justifications/');
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }

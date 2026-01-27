@@ -5,9 +5,14 @@ const path = require('path');
 const fs = require('fs');
 
 // Multer Config for Images
+const uploadDir = path.join(__dirname, '../../uploads/profiles/');
+
 const storage = multer.diskStorage({
     destination(req, file, cb) {
-        cb(null, 'uploads/profiles/');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
     },
     filename(req, file, cb) {
         cb(null, `profile-${req.user._id}-${Date.now()}${path.extname(file.originalname)}`);
@@ -29,11 +34,6 @@ const checkFileType = (file, cb) => {
 const uploadProfile = multer({
     storage,
     fileFilter: function (req, file, cb) {
-        // Ensure directory exists
-        const dir = 'uploads/profiles/';
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
         checkFileType(file, cb);
     },
 });
