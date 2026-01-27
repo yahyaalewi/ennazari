@@ -20,7 +20,7 @@ import { FormsModule } from '@angular/forms'; // Add import
       <div class="page-header">
         <div class="header-content">
           <h2 class="title">📈 {{ 'GRADES.TITLE' | translate }}</h2>
-          <p class="subtitle">{{ 'GRADES.SUBTITLE' | translate }}</p>
+          <p class="subtitle" *ngIf="user?.role === 'student'">{{ 'GRADES.SUBTITLE' | translate }}</p>
         </div>
         
         <!-- Search Bar (Manager/Professor) -->
