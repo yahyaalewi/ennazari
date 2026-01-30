@@ -16,6 +16,10 @@ app.use(helmet({
 const morgan = require('morgan');
 app.use(morgan('dev'));
 
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Fix for old file paths saved with absolute Docker path (backward compatibility)
 app.use((req, res, next) => {
     if (req.url.includes('/app/uploads')) {
