@@ -52,7 +52,17 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
               </div>
 
               <div class="error-message" *ngIf="errorMessage">⚠️ {{ errorMessage }}</div>
-              <div class="success-message" *ngIf="successMessage">✅ {{ 'PROFILE.UPLOAD_SUCCESS' | translate }}</div>
+              <div class="success-message" *ngIf="successMessage">✅ {{ successMessage }}</div>
+
+              <div class="actions-bar" style="margin-bottom: 1rem; text-align: right;">
+                 <button class="btn-edit" *ngIf="!editMode" (click)="toggleEditMode()">
+                    ✏️ {{ 'COMMON.EDIT' | translate }}
+                 </button>
+                 <div *ngIf="editMode" style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                    <button class="btn-cancel" (click)="toggleEditMode()">{{ 'COMMON.CANCEL' | translate }}</button>
+                    <button class="btn-save" (click)="saveProfile()">{{ 'COMMON.SAVE' | translate }}</button>
+                 </div>
+              </div>
 
               <div class="info-grid">
                 <div class="info-card">
@@ -67,7 +77,25 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
                   <div class="info-icon">👤</div>
                   <div class="info-content">
                     <label>{{ 'PROFILE.FULL_NAME' | translate }}</label>
-                    <div class="value">{{ user()?.firstName }} {{ user()?.lastName }}</div>
+                    <div class="value" *ngIf="!editMode">{{ user()?.firstName }} {{ user()?.lastName }}</div>
+                    <div class="edit-fields" *ngIf="editMode">
+                       <input [(ngModel)]="editData.firstName" placeholder="Prénom" class="form-input">
+                       <input [(ngModel)]="editData.lastName" placeholder="Nom" class="form-input">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Date of Birth Card -->
+                <div class="info-card">
+                  <div class="info-icon">🎂</div>
+                  <div class="info-content">
+                    <label>{{ 'PROFILE.DATE_OF_BIRTH' | translate }}</label>
+                    <div class="value" *ngIf="!editMode">
+                        {{ user()?.dateOfBirth ? (user()?.dateOfBirth | date:'longDate') : 'Non renseignée' }}
+                    </div>
+                    <div class="edit-fields" *ngIf="editMode">
+                        <input type="date" [ngModel]="formatDateForInput(editData.dateOfBirth)" (ngModelChange)="editData.dateOfBirth = $event" class="form-input">
+                    </div>
                   </div>
                 </div>
 
@@ -289,6 +317,15 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
       color: var(--text-main);
       word-break: break-word;
     }
+    
+    .form-input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
 
     .value.highlight {
       color: var(--primary);
@@ -307,6 +344,42 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     .upload-status { background: #f0f9ff; color: #0284c7; }
     .error-message { background: #fef2f2; color: #dc2626; }
     .success-message { background: #f0fdf4; color: #16a34a; }
+
+    .btn-edit {
+        background: #f1f5f9;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--text-main);
+        transition: all 0.2s;
+    }
+    .btn-edit:hover { background: #e2e8f0; }
+
+    .btn-save {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .btn-save:hover { opacity: 0.9; }
+
+    .btn-cancel {
+        background: transparent;
+        color: var(--text-muted);
+        border: 1px solid #e2e8f0;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .btn-cancel:hover { background: #f8fafc; }
 
     .spinner {
       width: 20px;
@@ -337,6 +410,9 @@ export class ProfileComponent implements OnInit {
   successMessage = '';
   imageLoadError = false;
 
+  editMode = false;
+  editData: any = {};
+
   private translate = inject(TranslateService);
 
   constructor(private http: HttpClient) { }
@@ -350,11 +426,62 @@ export class ProfileComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.authService.currentUser.set(data);
-          // Also update localStorage to keep it in sync
           localStorage.setItem('user', JSON.stringify(data));
+          this.initEditData(data);
         },
         error: (err) => console.error('Error fetching profile:', err)
       });
+  }
+
+  initEditData(data: User) {
+    this.editData = {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      dateOfBirth: data.dateOfBirth
+    };
+  }
+
+  toggleEditMode() {
+    this.editMode = !this.editMode;
+    if (this.editMode && this.user()) {
+      this.initEditData(this.user()!);
+    }
+    this.errorMessage = '';
+    this.successMessage = '';
+  }
+
+  saveProfile() {
+    this.uploading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.http.put<User>(`${ApiConstants.baseUrl}/users/profile`, this.editData)
+      .subscribe({
+        next: (data) => {
+          this.uploading = false;
+          this.editMode = false;
+          this.authService.currentUser.set(data);
+          localStorage.setItem('user', JSON.stringify(data));
+          this.translate.get('PROFILE.UPDATE_INFO_SUCCESS').subscribe(m => this.successMessage = m);
+        },
+        error: (err) => {
+          this.uploading = false;
+          this.translate.get('PROFILE.UPDATE_INFO_ERROR').subscribe(m => this.errorMessage = m);
+          console.error(err);
+        }
+      });
+  }
+
+  formatDateForInput(date: string | Date | undefined): string {
+    if (!date) return '';
+    // If it's already a string in YYYY-MM-DD format
+    if (typeof date === 'string' && date.includes('T')) {
+      return date.split('T')[0];
+    }
+    if (date instanceof Date) {
+      return date.toISOString().split('T')[0];
+    }
+    return date as string;
   }
 
   getClassName(): string {

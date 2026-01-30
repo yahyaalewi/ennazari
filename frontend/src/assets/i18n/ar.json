@@ -25,7 +25,10 @@
         "UPLOAD_SUCCESS": "تم تحديث صورة الملف الشخصي بنجاح!",
         "UPLOAD_ERROR": "خطأ أثناء التحميل",
         "NOT_ASSIGNED": "غير معين",
-        "NO_SUBJECTS": "لا توجد مواد"
+        "NO_SUBJECTS": "لا توجد مواد",
+        "DATE_OF_BIRTH": "تاريخ الميلاد",
+        "UPDATE_INFO_SUCCESS": "تم تحديث المعلومات بنجاح",
+        "UPDATE_INFO_ERROR": "خطأ أثناء تحديث المعلومات"
     },
     "USERS": {
         "TITLE": "المستخدمين",

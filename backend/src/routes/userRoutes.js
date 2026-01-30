@@ -1,9 +1,9 @@
-const express = require('express');
 const router = express.Router();
-const { getUsers, createUser, updateUser, deleteUser, updateProfilePicture, uploadProfile, getProfile, unlockUser } = require('../controllers/userController');
+const { getUsers, createUser, updateUser, deleteUser, updateProfilePicture, uploadProfile, getProfile, updateMyProfile, unlockUser } = require('../controllers/userController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.get('/profile', protect, getProfile);
+router.put('/profile', protect, updateMyProfile);
 router.route('/')
     .get(protect, authorize('manager', 'professor'), getUsers) // Professors might need to list students
     .post(protect, authorize('manager'), createUser);

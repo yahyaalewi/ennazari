@@ -25,7 +25,10 @@
         "UPLOAD_SUCCESS": "Photo de profil mise à jour avec succès !",
         "UPLOAD_ERROR": "Erreur lors du téléchargement",
         "NOT_ASSIGNED": "Non assignée",
-        "NO_SUBJECTS": "Aucune matière"
+        "NO_SUBJECTS": "Aucune matière",
+        "DATE_OF_BIRTH": "Date de naissance",
+        "UPDATE_INFO_SUCCESS": "Informations mises à jour avec succès",
+        "UPDATE_INFO_ERROR": "Erreur lors de la mise à jour"
     },
     "USERS": {
         "TITLE": "Utilisateurs",

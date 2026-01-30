@@ -62,7 +62,7 @@ const getUsers = async (req, res) => {
 // @access  Private (Manager)
 const createUser = async (req, res) => {
     try {
-        const { firstName, lastName, email, password, role, classId, subjects } = req.body;
+        const { firstName, lastName, email, password, role, classId, subjects, dateOfBirth } = req.body;
 
         const userExists = await User.findOne({ email });
         if (userExists) {
@@ -76,6 +76,7 @@ const createUser = async (req, res) => {
             email,
             password, // Plain text here, model hashes it
             role,
+            dateOfBirth,
             classId: role === 'student' ? classId : undefined,
             subjects: role === 'professor' ? subjects : undefined,
         });
@@ -103,6 +104,8 @@ const updateUser = async (req, res) => {
             user.firstName = req.body.firstName || user.firstName;
             user.lastName = req.body.lastName || user.lastName;
             user.email = req.body.email || user.email;
+            user.dateOfBirth = req.body.dateOfBirth || user.dateOfBirth;
+
             if (req.body.password) {
                 user.password = req.body.password; // Model will hash this if modified
             }
@@ -188,6 +191,46 @@ const getProfile = async (req, res) => {
     }
 };
 
+// @desc    Update user profile (Self)
+// @route   PUT /api/users/profile
+// @access  Private
+const updateMyProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+
+        if (user) {
+            user.firstName = req.body.firstName || user.firstName;
+            user.lastName = req.body.lastName || user.lastName;
+            user.dateOfBirth = req.body.dateOfBirth || user.dateOfBirth;
+            // Email updates might require verification so we skip for now or allow it
+            // user.email = req.body.email || user.email; 
+
+            if (req.body.password) {
+                user.password = req.body.password;
+            }
+
+            const updatedUser = await user.save();
+
+            res.json({
+                _id: updatedUser._id,
+                firstName: updatedUser.firstName,
+                lastName: updatedUser.lastName,
+                email: updatedUser.email,
+                role: updatedUser.role,
+                dateOfBirth: updatedUser.dateOfBirth,
+                classId: updatedUser.classId, // Keep existing populated/unpopulated structure logic if needed, but here we just return what's saved
+                subjects: updatedUser.subjects,
+                profilePicture: updatedUser.profilePicture,
+                token: req.headers.authorization.split(' ')[1] // Keep same token
+            });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 const unlockUser = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -215,7 +258,8 @@ module.exports = {
     updateUser,
     deleteUser,
     updateProfilePicture,
-    uploadProfile,
+    updateProfile,
     getProfile,
+    updateMyProfile,
     unlockUser
 };
