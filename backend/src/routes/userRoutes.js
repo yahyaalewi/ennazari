@@ -1,3 +1,4 @@
+const express = require('express');
 const router = express.Router();
 const { getUsers, createUser, updateUser, deleteUser, updateProfilePicture, uploadProfile, getProfile, updateMyProfile, unlockUser } = require('../controllers/userController');
 const { protect, authorize } = require('../middleware/authMiddleware');
