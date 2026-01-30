@@ -77,16 +77,23 @@ PORT=$NODE_PORT node server.js &
 NODE_PID=$!
 
 echo "⏳ Waiting for Node.js to be ready on port $NODE_PORT..."
-# Attendre jusqu'a 30 secondes que le port 3000 réponde
+# Attendre jusqu'a 45 secondes que le port 3000 réponde
 count=0
 while ! nc -z 127.0.0.1 $NODE_PORT; do   
+  # Vérifier si le processus Node est toujours en vie
+  if ! kill -0 $NODE_PID 2>/dev/null; then
+      echo "❌ ERROR: Node.js process died unexpectedly! Checking logs above to see why."
+      wait $NODE_PID 
+      exit 1
+  fi
+
   sleep 1
   count=$((count + 1))
-  if [ $count -ge 30 ]; then
+  if [ $count -ge 45 ]; then
       echo "❌ Timeout waiting for Node.js to start. Check logs above."
       exit 1
   fi
-  echo "Still waiting for Node.js... ($count/30s)"
+  echo "Still waiting for Node.js... ($count/45s)"
 done
 echo "✅ Node.js is UP and listening!"
 
