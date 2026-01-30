@@ -65,19 +65,23 @@ const loginUser = async (req, res) => {
     }
 };
 
-// @desc    Register a new user (Manager can create users, but for dev/seeding we might need a public one or seed script)
+// @desc    Register a new user
 // @route   POST /api/auth/register
-// @access  Public (for now/dev) or Manager Only
+// @access  DISABLED (Was Public) - Security Risk: Allowed creating Managers publicly.
 const registerUser = async (req, res) => {
-    const { firstName, lastName, email, password, role } = req.body;
+    // 🔒 SECURITY BLOCK: Prevent usage if route is accidentally enabled
+    return res.status(403).json({ message: "Public registration is disabled. Please contact an administrator." });
 
+    /* ORIGINAL CODE DISABLED
+    const { firstName, lastName, email, password, role } = req.body;
+    
     try {
         const userExists = await User.findOne({ email });
-
+    
         if (userExists) {
             return res.status(400).json({ message: 'User already exists' });
         }
-
+    
         const user = await User.create({
             firstName,
             lastName,
@@ -85,7 +89,7 @@ const registerUser = async (req, res) => {
             password,
             role,
         });
-
+    
         if (user) {
             res.status(201).json({
                 _id: user._id,
@@ -98,9 +102,10 @@ const registerUser = async (req, res) => {
         } else {
             res.status(400).json({ message: 'Invalid user data' });
         }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+        */
 };
 
 module.exports = { loginUser, registerUser };
