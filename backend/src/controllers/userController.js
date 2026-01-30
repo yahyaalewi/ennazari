@@ -258,7 +258,7 @@ module.exports = {
     updateUser,
     deleteUser,
     updateProfilePicture,
-    updateProfile,
+    uploadProfile,
     getProfile,
     updateMyProfile,
     unlockUser
