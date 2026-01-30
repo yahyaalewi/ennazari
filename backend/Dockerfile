@@ -4,8 +4,8 @@ FROM owasp/modsecurity-crs:nginx-alpine
 # Passer en root pour installer Node.js
 USER root
 
-# Installation de Node.js et NPM (requis pour faire tourner le backend dans le même conteneur)
-RUN apk add --no-cache nodejs npm
+# Installation de Node.js, NPM et Netcat (pour le healthcheck du port)
+RUN apk add --no-cache nodejs npm netcat-openbsd
 
 # Création du répertoire de travail
 WORKDIR /app
