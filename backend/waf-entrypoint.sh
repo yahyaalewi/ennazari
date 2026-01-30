@@ -53,22 +53,31 @@ echo "# ModSecurity Main Configuration" > /etc/nginx/modsec/main.conf
 echo "Include /etc/nginx/modsec/modsecurity.conf" >> /etc/nginx/modsec/main.conf
 
 # Activer les règles OWASP CRS (Core Rule Set) si disponibles
-if [ -f /opt/owasp-crs/crs-setup.conf.example ]; then
-    cp /opt/owasp-crs/crs-setup.conf.example /etc/nginx/modsec/crs-setup.conf
+# Recherche plus robuste des fichiers OWASP CRS
+CRS_SETUP=$(find / -name crs-setup.conf.example 2>/dev/null | head -n 1)
+
+if [ -n "$CRS_SETUP" ]; then
+    echo "✅ Found crs-setup.conf.example at: $CRS_SETUP"
+    cp "$CRS_SETUP" /etc/nginx/modsec/crs-setup.conf
     echo "Include /etc/nginx/modsec/crs-setup.conf" >> /etc/nginx/modsec/main.conf
     
-    # Chercher où sont vraiment les règles
-    if [ -d /opt/owasp-crs/rules ]; then
-        echo "Include /opt/owasp-crs/rules/*.conf" >> /etc/nginx/modsec/main.conf
-        echo "✅ OWASP CRS Rules included from /opt/owasp-crs/rules/"
-    elif [ -d /usr/local/owasp-modsecurity-crs/rules ]; then
-         echo "Include /usr/local/owasp-modsecurity-crs/rules/*.conf" >> /etc/nginx/modsec/main.conf
-         echo "✅ OWASP CRS Rules included from /usr/local/owasp-modsecurity-crs/"
+    # Chercher le dossier rules relative au setup ou ailleurs
+    CRS_DIR=$(dirname "$CRS_SETUP")
+    if [ -d "$CRS_DIR/rules" ]; then
+        echo "Include $CRS_DIR/rules/*.conf" >> /etc/nginx/modsec/main.conf
+        echo "✅ OWASP CRS Rules included from $CRS_DIR/rules/"
     else
-        echo "⚠️ WARNING: OWASP rules directory not found. WAF running with basic config only."
+        # Fallback search for rules
+        RULES_DIR=$(find / -type d -name "rules" -path "*/owasp*/*" 2>/dev/null | head -n 1)
+        if [ -n "$RULES_DIR" ]; then
+             echo "Include $RULES_DIR/*.conf" >> /etc/nginx/modsec/main.conf
+             echo "✅ OWASP CRS Rules included from $RULES_DIR"
+        else
+             echo "⚠️ WARNING: OWASP rules directory not found. WAF running with basic config only."
+        fi
     fi
 else
-    echo "⚠️ WARNING: crs-setup.conf.example not found. WAF running with minimal config."
+    echo "⚠️ WARNING: crs-setup.conf.example not found in entire system. WAF running with minimal config."
 fi
 # ------------------------------------------------
 
