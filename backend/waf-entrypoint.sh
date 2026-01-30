@@ -52,7 +52,6 @@ echo "✅ Created minimal modsecurity.conf"
 echo "# ModSecurity Main Configuration" > /etc/nginx/modsec/main.conf
 echo "Include /etc/nginx/modsec/modsecurity.conf" >> /etc/nginx/modsec/main.conf
 
-# Activer les règles OWASP CRS (Core Rule Set) si disponibles
 # Recherche plus robuste des fichiers OWASP CRS
 CRS_SETUP=$(find / -name crs-setup.conf.example 2>/dev/null | head -n 1)
 
@@ -61,13 +60,11 @@ if [ -n "$CRS_SETUP" ]; then
     cp "$CRS_SETUP" /etc/nginx/modsec/crs-setup.conf
     echo "Include /etc/nginx/modsec/crs-setup.conf" >> /etc/nginx/modsec/main.conf
     
-    # Chercher le dossier rules relative au setup ou ailleurs
     CRS_DIR=$(dirname "$CRS_SETUP")
     if [ -d "$CRS_DIR/rules" ]; then
         echo "Include $CRS_DIR/rules/*.conf" >> /etc/nginx/modsec/main.conf
         echo "✅ OWASP CRS Rules included from $CRS_DIR/rules/"
     else
-        # Fallback search for rules
         RULES_DIR=$(find / -type d -name "rules" -path "*/owasp*/*" 2>/dev/null | head -n 1)
         if [ -n "$RULES_DIR" ]; then
              echo "Include $RULES_DIR/*.conf" >> /etc/nginx/modsec/main.conf
@@ -77,7 +74,27 @@ if [ -n "$CRS_SETUP" ]; then
         fi
     fi
 else
-    echo "⚠️ WARNING: crs-setup.conf.example not found in entire system. WAF running with minimal config."
+    # FALLBACK: Create a default crs-setup.conf if none exists
+    echo "⚠️ crs-setup.conf.example not found. Creating default..."
+    cat > /etc/nginx/modsec/crs-setup.conf <<EOL
+SecAction \\
+ "id:900990,\\
+  phase:1,\\
+  nolog,\\
+  pass,\\
+  t:none,\\
+  setvar:tx.crs_setup_version=330"
+EOL
+    echo "Include /etc/nginx/modsec/crs-setup.conf" >> /etc/nginx/modsec/main.conf
+    
+    # Try to find rules anyway
+    RULES_DIR=$(find / -type d -name "rules" -path "*/owasp*/*" 2>/dev/null | head -n 1)
+        if [ -n "$RULES_DIR" ]; then
+             echo "Include $RULES_DIR/*.conf" >> /etc/nginx/modsec/main.conf
+             echo "✅ OWASP CRS Rules included from $RULES_DIR"
+        else
+             echo "⚠️ WARNING: OWASP rules directory not found. WAF running with basic config only."
+        fi
 fi
 # ------------------------------------------------
 
