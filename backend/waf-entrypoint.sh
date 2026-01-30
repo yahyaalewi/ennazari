@@ -28,33 +28,44 @@ else
     echo "⚠️ CRITICAL: ModSecurity module not found. Nginx might fail."
 fi
 
-# 3. Générer la configuration des règles (main.conf) si elle manque
-# Car on contourne l'entrypoint original qui fait ça normalement
-if [ ! -f /etc/nginx/modsec/main.conf ]; then
-    echo "🛠️ Generating ModSecurity config..."
-    mkdir -p /etc/nginx/modsec
+# 3. Générer la configuration des règles (main.conf) de manière ROBUSTE
+echo "🛠️ Generating ModSecurity config..."
+mkdir -p /etc/nginx/modsec
+
+# Au lieu de chercher un fichier template qui peut manquer, on crée une conf minimale valide
+cat > /etc/nginx/modsec/modsecurity.conf <<EOL
+# Configuration ModSecurity Minimale
+SecRuleEngine On
+SecRequestBodyAccess On
+SecResponseBodyAccess Off
+SecStatusEngine On
+SecAuditLog /dev/stdout
+SecAuditLogFormat JSON
+EOL
+
+echo "✅ Created minimal modsecurity.conf"
+
+# Créer main.conf
+echo "# ModSecurity Main Configuration" > /etc/nginx/modsec/main.conf
+echo "Include /etc/nginx/modsec/modsecurity.conf" >> /etc/nginx/modsec/main.conf
+
+# Activer les règles OWASP CRS (Core Rule Set) si disponibles
+if [ -f /opt/owasp-crs/crs-setup.conf.example ]; then
+    cp /opt/owasp-crs/crs-setup.conf.example /etc/nginx/modsec/crs-setup.conf
+    echo "Include /etc/nginx/modsec/crs-setup.conf" >> /etc/nginx/modsec/main.conf
     
-    # Copier la conf de base
-    [ -f /etc/nginx/modsec/modsecurity.conf-recommended ] && \
-        cp /etc/nginx/modsec/modsecurity.conf-recommended /etc/nginx/modsec/modsecurity.conf
-    
-    # Créer main.conf avec les inclusions
-    echo "# ModSecurity Main Configuration" > /etc/nginx/modsec/main.conf
-    echo "Include /etc/nginx/modsec/modsecurity.conf" >> /etc/nginx/modsec/main.conf
-    
-    # Activer les règles OWASP CRS (Core Rule Set)
-    # Copier le setup par défaut si besoin
-    if [ -f /opt/owasp-crs/crs-setup.conf.example ] && [ ! -f /opt/owasp-crs/crs-setup.conf ]; then
-        cp /opt/owasp-crs/crs-setup.conf.example /opt/owasp-crs/crs-setup.conf
-    fi
-    
-    if [ -f /opt/owasp-crs/crs-setup.conf ]; then
-        echo "Include /opt/owasp-crs/crs-setup.conf" >> /etc/nginx/modsec/main.conf
+    # Chercher où sont vraiment les règles
+    if [ -d /opt/owasp-crs/rules ]; then
         echo "Include /opt/owasp-crs/rules/*.conf" >> /etc/nginx/modsec/main.conf
-        echo "✅ OWASP CRS Rules included."
+        echo "✅ OWASP CRS Rules included from /opt/owasp-crs/rules/"
+    elif [ -d /usr/local/owasp-modsecurity-crs/rules ]; then
+         echo "Include /usr/local/owasp-modsecurity-crs/rules/*.conf" >> /etc/nginx/modsec/main.conf
+         echo "✅ OWASP CRS Rules included from /usr/local/owasp-modsecurity-crs/"
     else
-        echo "⚠️ OWASP CRS files not found in /opt/owasp-crs/"
+        echo "⚠️ WARNING: OWASP rules directory not found. WAF running with basic config only."
     fi
+else
+    echo "⚠️ WARNING: crs-setup.conf.example not found. WAF running with minimal config."
 fi
 # ------------------------------------------------
 
