@@ -54,16 +54,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
               <div class="error-message" *ngIf="errorMessage">⚠️ {{ errorMessage }}</div>
               <div class="success-message" *ngIf="successMessage">✅ {{ successMessage }}</div>
 
-              <div class="actions-bar" style="margin-bottom: 1rem; text-align: right;">
-                 <button class="btn-edit" *ngIf="!editMode" (click)="toggleEditMode()">
-                    ✏️ {{ 'COMMON.EDIT' | translate }}
-                 </button>
-                 <div *ngIf="editMode" style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-                    <button class="btn-cancel" (click)="toggleEditMode()">{{ 'COMMON.CANCEL' | translate }}</button>
-                    <button class="btn-save" (click)="saveProfile()">{{ 'COMMON.SAVE' | translate }}</button>
-                 </div>
-              </div>
-
               <div class="info-grid">
                 <div class="info-card">
                   <div class="info-icon">📧</div>
@@ -77,11 +67,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
                   <div class="info-icon">👤</div>
                   <div class="info-content">
                     <label>{{ 'PROFILE.FULL_NAME' | translate }}</label>
-                    <div class="value" *ngIf="!editMode">{{ user()?.firstName }} {{ user()?.lastName }}</div>
-                    <div class="edit-fields" *ngIf="editMode">
-                       <input [(ngModel)]="editData.firstName" placeholder="Prénom" class="form-input">
-                       <input [(ngModel)]="editData.lastName" placeholder="Nom" class="form-input">
-                    </div>
+                    <div class="value">{{ user()?.firstName }} {{ user()?.lastName }}</div>
                   </div>
                 </div>
 
@@ -90,11 +76,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
                   <div class="info-icon">🎂</div>
                   <div class="info-content">
                     <label>{{ 'PROFILE.DATE_OF_BIRTH' | translate }}</label>
-                    <div class="value" *ngIf="!editMode">
+                    <div class="value">
                         {{ user()?.dateOfBirth ? (user()?.dateOfBirth | date:'longDate') : 'Non renseignée' }}
-                    </div>
-                    <div class="edit-fields" *ngIf="editMode">
-                        <input type="date" [ngModel]="formatDateForInput(editData.dateOfBirth)" (ngModelChange)="editData.dateOfBirth = $event" class="form-input">
                     </div>
                   </div>
                 </div>
@@ -410,9 +393,6 @@ export class ProfileComponent implements OnInit {
   successMessage = '';
   imageLoadError = false;
 
-  editMode = false;
-  editData: any = {};
-
   private translate = inject(TranslateService);
 
   constructor(private http: HttpClient) { }
@@ -427,62 +407,12 @@ export class ProfileComponent implements OnInit {
         next: (data) => {
           this.authService.currentUser.set(data);
           localStorage.setItem('user', JSON.stringify(data));
-          this.initEditData(data);
         },
         error: (err) => console.error('Error fetching profile:', err)
       });
   }
 
-  initEditData(data: User) {
-    this.editData = {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      dateOfBirth: data.dateOfBirth
-    };
-  }
 
-  toggleEditMode() {
-    this.editMode = !this.editMode;
-    if (this.editMode && this.user()) {
-      this.initEditData(this.user()!);
-    }
-    this.errorMessage = '';
-    this.successMessage = '';
-  }
-
-  saveProfile() {
-    this.uploading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
-
-    this.http.put<User>(`${ApiConstants.baseUrl}/users/profile`, this.editData)
-      .subscribe({
-        next: (data) => {
-          this.uploading = false;
-          this.editMode = false;
-          this.authService.currentUser.set(data);
-          localStorage.setItem('user', JSON.stringify(data));
-          this.translate.get('PROFILE.UPDATE_INFO_SUCCESS').subscribe(m => this.successMessage = m);
-        },
-        error: (err) => {
-          this.uploading = false;
-          this.translate.get('PROFILE.UPDATE_INFO_ERROR').subscribe(m => this.errorMessage = m);
-          console.error(err);
-        }
-      });
-  }
-
-  formatDateForInput(date: string | Date | undefined): string {
-    if (!date) return '';
-    // If it's already a string in YYYY-MM-DD format
-    if (typeof date === 'string' && date.includes('T')) {
-      return date.split('T')[0];
-    }
-    if (date instanceof Date) {
-      return date.toISOString().split('T')[0];
-    }
-    return date as string;
-  }
 
   getClassName(): string {
     const user = this.user();

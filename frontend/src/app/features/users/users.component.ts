@@ -67,6 +67,11 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
             </div>
 
             <div class="form-group">
+              <label>{{ 'PROFILE.DATE_OF_BIRTH' | translate }}</label>
+              <input type="date" [ngModel]="formatDateForInput(formData.dateOfBirth)" (ngModelChange)="formData.dateOfBirth = $event" name="dateOfBirth">
+            </div>
+
+            <div class="form-group">
               <label>{{ 'USERS.ROLE' | translate }} *</label>
               <select [(ngModel)]="formData.role" name="role" required (change)="onRoleChange()">
                 <option value="">{{ 'USERS.SELECT_ROLE' | translate }}</option>
@@ -750,6 +755,7 @@ export class UsersComponent implements OnInit {
     password: '',
     role: '',
     classId: '',
+    dateOfBirth: '',
     subjects: [] as string[]
   };
 
@@ -763,6 +769,17 @@ export class UsersComponent implements OnInit {
     this.loadUsers();
     this.loadClasses();
     this.loadSubjects();
+  }
+
+  formatDateForInput(date: string | Date | undefined): string {
+    if (!date) return '';
+    if (typeof date === 'string' && date.includes('T')) {
+      return date.split('T')[0];
+    }
+    if (date instanceof Date) {
+      return date.toISOString().split('T')[0];
+    }
+    return date as string;
   }
 
   loadUsers() {
@@ -858,7 +875,8 @@ export class UsersComponent implements OnInit {
       firstName: this.formData.firstName,
       lastName: this.formData.lastName,
       email: this.formData.email,
-      role: this.formData.role
+      role: this.formData.role,
+      dateOfBirth: this.formData.dateOfBirth
     };
 
     // Include password if creating new user OR if editing and password field is not empty
@@ -908,6 +926,7 @@ export class UsersComponent implements OnInit {
       password: '',
       role: user.role,
       classId: user.classId || '',
+      dateOfBirth: user.dateOfBirth ? (user.dateOfBirth as string) : '',
       subjects: user.subjects || []
     };
     this.showCreateForm = true;
@@ -976,6 +995,7 @@ export class UsersComponent implements OnInit {
       password: '',
       role: '',
       classId: '',
+      dateOfBirth: '',
       subjects: []
     };
   }
