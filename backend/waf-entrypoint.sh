@@ -41,6 +41,9 @@ SecResponseBodyAccess Off
 SecStatusEngine On
 SecAuditLog /dev/stdout
 SecAuditLogFormat JSON
+# Allow 50MB Uploads (Matches Nginx)
+SecRequestBodyLimit 52428800
+SecRequestBodyNoFilesLimit 131072
 EOL
 
 echo "✅ Created minimal modsecurity.conf"
