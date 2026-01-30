@@ -76,7 +76,19 @@ echo "🌱 Starting Node.js..."
 PORT=$NODE_PORT node server.js &
 NODE_PID=$!
 
-sleep 3
+echo "⏳ Waiting for Node.js to be ready on port $NODE_PORT..."
+# Attendre jusqu'a 30 secondes que le port 3000 réponde
+count=0
+while ! nc -z 127.0.0.1 $NODE_PORT; do   
+  sleep 1
+  count=$((count + 1))
+  if [ $count -ge 30 ]; then
+      echo "❌ Timeout waiting for Node.js to start. Check logs above."
+      exit 1
+  fi
+  echo "Still waiting for Node.js... ($count/30s)"
+done
+echo "✅ Node.js is UP and listening!"
 
 echo "🛡️ Configuring Nginx WAF..."
 # Remplacer le port
