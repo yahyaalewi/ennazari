@@ -49,6 +49,14 @@ SecUploadDir /tmp
 SecTmpDir /tmp
 SecDataDir /tmp
 SecUploadKeepFiles Off
+
+# Allow DELETE/PUT/PATCH methods for API endpoints (Manager operations)
+SecRule REQUEST_URI "@beginsWith /api/" \\
+    "id:1000,\\
+    phase:1,\\
+    pass,\\
+    nolog,\\
+    ctl:ruleRemoveById=911100"
 EOL
 
 echo "✅ Created minimal modsecurity.conf"
