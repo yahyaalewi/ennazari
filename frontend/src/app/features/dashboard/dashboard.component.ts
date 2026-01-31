@@ -148,7 +148,7 @@ import { LocalizedDatePipe } from '../../shared/pipes/localized-date.pipe';
               &copy; {{ today | date:'yyyy' }} {{ 'SIDEBAR.APP_NAME' | translate }}. {{ 'FOOTER.ALL_RIGHTS_RESERVED' | translate }}
             </div>
             <div class="credits">
-              Cette plateforme a été développée par <span class="author">Yahya El Mamy</span>
+              {{ 'FOOTER.CREATED_BY' | translate }} <span class="author">Yahya El Mamy</span>
             </div>
           </div>
         </footer>
