@@ -9,11 +9,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastService } from '../../core/services/toast.service';
 import { ConfirmationService } from '../../core/services/confirmation.service';
+import { LocalizedDatePipe } from '../../shared/pipes/localized-date.pipe';
 
 @Component({
   selector: 'app-courses',
   standalone: true,
-  imports: [CommonModule, TranslateModule, FormsModule], // Add FormsModule
+  imports: [CommonModule, TranslateModule, FormsModule, LocalizedDatePipe], // Add LocalizedDatePipe
   template: `
     <div class="courses-page">
       <div class="page-header">
@@ -83,7 +84,7 @@ import { ConfirmationService } from '../../core/services/confirmation.service';
                     </span>
                     <span class="meta-item">
                       <span class="icon">📅</span>
-                      {{ course.createdAt | date:'shortDate' }}
+                      {{ course.createdAt | localizedDate:'shortDate' }}
                     </span>
                   </div>
                 </div>

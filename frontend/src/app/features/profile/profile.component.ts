@@ -7,10 +7,12 @@ import { ApiConstants } from '../../core/constants/api.constants';
 import { User } from '../../core/models/models';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
+import { LocalizedDatePipe } from '../../shared/pipes/localized-date.pipe';
+
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, LocalizedDatePipe],
   template: `
     <div class="profile-page">
       <div class="profile-wrapper">
@@ -77,7 +79,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
                   <div class="info-content">
                     <label>{{ 'PROFILE.DATE_OF_BIRTH' | translate }}</label>
                     <div class="value">
-                        {{ user()?.dateOfBirth ? (user()?.dateOfBirth | date:'longDate') : 'Non renseignée' }}
+                        {{ user()?.dateOfBirth ? (user()?.dateOfBirth | localizedDate:'longDate') : 'Non renseignée' }}
                     </div>
                   </div>
                 </div>

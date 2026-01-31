@@ -9,11 +9,12 @@ import { User, Notification } from '../../core/models/models';
 import { ApiConstants } from '../../core/constants/api.constants';
 import { TranslateModule } from '@ngx-translate/core';
 import { UiService } from '../../core/services/ui.service';
+import { LocalizedDatePipe } from '../../shared/pipes/localized-date.pipe';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule],
+  imports: [CommonModule, RouterModule, TranslateModule, LocalizedDatePipe],
   template: `
     <div class="dashboard-layout" [dir]="currentLang() === 'ar' ? 'rtl' : 'ltr'">
       <!-- Mobile Overlay -->
@@ -96,7 +97,7 @@ import { UiService } from '../../core/services/ui.service';
                   <div class="notification-content">
                     <div class="notification-title">{{ getNotificationData(notification).titleKey | translate: getNotificationData(notification).titleParams }}</div>
                     <div class="notification-message">{{ getNotificationData(notification).msgKey | translate: getNotificationData(notification).msgParams }}</div>
-                    <div class="notification-time">{{ notification.createdAt | date:'short' }}</div>
+                    <div class="notification-time">{{ notification.createdAt | localizedDate:'short' }}</div>
                   </div>
                   <button class="delete-btn" (click)="deleteNotification(notification._id, $event)">×</button>
                 </div>
@@ -121,7 +122,7 @@ import { UiService } from '../../core/services/ui.service';
                 <p class="notification-full-message">{{ getNotificationData(selectedNotification).msgKey | translate: getNotificationData(selectedNotification).msgParams }}</p>
                 <div class="notification-meta">
                   <span class="meta-item">
-                    <strong>📅 Date:</strong> {{ selectedNotification.createdAt | date:'full' }}
+                    <strong>📅 Date:</strong> {{ selectedNotification.createdAt | localizedDate:'full' }}
                   </span>
                   <span class="meta-item" [class.unread-badge]="!selectedNotification.read">
                     <strong>📌 Statut:</strong> {{ selectedNotification.read ? 'Lu' : 'Non lu' }}
