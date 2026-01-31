@@ -128,7 +128,7 @@
             "EXAMEN_T3": "امتحان الدورة الثالثة"
         },
         "SAVING": "جاري الحفظ...",
-        "DELETE_CONFIRM": "هل أنت متأكد من حذف هذه العلامة؟",
+        "DELETE_CONFIRM": "هل أنت متأكد أنك تريد حذف هذه العلامة؟",
         "DELETE_ERROR": "خطأ في حذف العلامة",
         "SEARCH_SUBJECT": "البحث حسب المادة...",
         "SEARCH_MANAGER": "البحث حسب الطالب، القسم أو المادة..."
@@ -174,7 +174,7 @@
         "STATUS_REJECTED": "مرفوض",
         "REJECTION_REASON": "سبب الرفض",
         "ERROR_FILE_TOO_LARGE": "الملف كبير جداً (الحد الأقصى 5 ميغابايت)",
-        "DELETE_CONFIRM": "هل أنت متأكد من حذف هذا الغياب؟",
+        "DELETE_CONFIRM": "هل أنت متأكد أنك تريد حذف هذا الغياب؟",
         "DELETE_ERROR": "خطأ في حذف الغياب"
     },
     "JUSTIFICATIONS": {
