@@ -44,6 +44,11 @@ SecAuditLogFormat JSON
 # Allow 50MB Uploads (Matches Nginx)
 SecRequestBodyLimit 52428800
 SecRequestBodyNoFilesLimit 131072
+# Fix for File Uploads: Configure a writable tmp directory
+SecUploadDir /tmp
+SecTmpDir /tmp
+SecDataDir /tmp
+SecUploadKeepFiles Off
 EOL
 
 echo "✅ Created minimal modsecurity.conf"
