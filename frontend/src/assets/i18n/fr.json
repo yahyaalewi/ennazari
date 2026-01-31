@@ -88,7 +88,8 @@
         "UPLOADING": "Téléchargement...",
         "VALID_PDF_ERROR": "Veuillez sélectionner un fichier PDF valide",
         "DELETE": "Supprimer le cours",
-        "DELETE_CONFIRM": "Êtes-vous sûr de vouloir supprimer ce cours ? Cette action est irréversible."
+        "DELETE_CONFIRM": "Êtes-vous sûr de vouloir supprimer ce cours ? Cette action est irréversible.",
+        "DELETE_SUCCESS": "Cours supprimé avec succès"
     },
     "GRADES": {
         "TITLE": "Notes",
